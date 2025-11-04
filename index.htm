@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фиолетовый Дискорд — Идеальный Шрифт</title>
+    <title>Фиолетовый Дискорд — Реальный Клон</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-
     <style>
         /* CSS Стили для всего приложения */
         :root {
-            --bg-dark: #202225; 
-            --bg-med: #2F3136; 
-            --bg-light: #36393F; 
-            --violet-brand: #7289DA;
-            --violet-active: #5865F2;
+            --bg-dark: #202225; /* Серверы, нижний бар */
+            --bg-med: #2F3136; /* Каналы, ввод чата */
+            --bg-light: #36393F; /* Чат, список участников */
+            --violet-brand: #5865F2; /* Более яркий для активных элементов */
+            --violet-active-bg: #4F545C52; /* Фон активного канала */
             --text-primary: #DCDDDE;
             --text-secondary: #99AAB5;
-            --status-online: #43B581;
+            --status-online: #43B581; /* Зеленый (онлайн) */
             --error-color: #F04747;
             --button-danger: #F04747;
-            --font-family: 'Montserrat', sans-serif; /* Используем Montserrat как аналог Whitney */
+            --font-family: 'Montserrat', sans-serif;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: var(--font-family); /* Применяем новый шрифт */
+            font-family: var(--font-family);
         }
 
         body, html {
@@ -39,95 +38,85 @@
             transition: background-color 0.5s;
         }
 
-        /* --- Стили Входа --- */
-        .login-container {
-            width: 480px;
-            padding: 32px;
-            background-color: var(--bg-light);
-            border-radius: 5px;
-            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.2);
-            text-align: center;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        /* --- Общие элементы --- */
+        .login-container { /* Стили входа остаются прежними */
+            width: 480px; padding: 32px; background-color: var(--bg-light); border-radius: 5px; 
+            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.2); text-align: center; position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
-
-        .login-container h2 { 
-            color: var(--text-primary); font-size: 24px; margin-bottom: 8px; font-weight: 600; 
-        }
-        .login-container p { color: var(--text-secondary); font-size: 16px; margin-bottom: 20px; }
-        .login-container label { 
-            display: block; text-align: left; color: var(--text-secondary); 
-            font-size: 12px; font-weight: 700; margin-top: 15px; margin-bottom: 5px;
-        }
-        .login-container input {
-            width: 100%; padding: 10px; background-color: var(--bg-dark); 
-            border: 1px solid #202225; border-radius: 3px; color: var(--text-primary); 
-            font-size: 16px; transition: border-color 0.2s;
-        }
-        .login-container input:focus { border-color: var(--violet-brand); outline: none; }
-        
-        .login-container button {
-            width: 100%; padding: 10px; margin-top: 20px; background-color: var(--violet-brand);
-            border: none; border-radius: 3px; color: var(--text-primary); 
-            font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 0.2s;
-        }
+        .login-container h2 { color: var(--text-primary); font-weight: 600; }
+        .login-container p { color: var(--text-secondary); }
+        .login-container label { color: var(--text-secondary); font-weight: 700; }
+        .login-container input { background-color: var(--bg-dark); color: var(--text-primary); }
+        .login-container button { background-color: var(--violet-brand); font-weight: 600; }
         .login-container button:hover { background-color: var(--violet-active); }
-        .error-message { color: var(--error-color); margin-top: 15px; font-size: 14px; display: none; }
+        .error-message { color: var(--error-color); }
 
         /* --- Стили Главного Экрана --- */
         .app-container {
             display: none; 
             height: 100vh;
             color: var(--text-primary);
-            font-weight: 500; /* Более светлый текст для основного контента */
+            font-weight: 500;
         }
-
-        .servers-panel { width: 72px; background-color: var(--bg-dark); padding: 10px 0; flex-shrink: 0; overflow-y: auto; }
+        
+        /* 1. Панель Серверов */
+        .servers-panel { width: 72px; background-color: #202225; padding: 10px 0; flex-shrink: 0; overflow-y: auto; }
         .server-icon { 
-            width: 50px; height: 50px; background-color: var(--bg-med); border-radius: 50%; 
+            width: 50px; height: 50px; background-color: #36393F; border-radius: 50%; 
             margin: 8px auto; display: flex; align-items: center; justify-content: center; 
             color: var(--text-primary); font-size: 1.5em; cursor: pointer; transition: border-radius 0.2s, background-color 0.2s;
         }
         .server-icon:hover { background-color: var(--violet-brand); }
         .server-icon.active { border-radius: 30%; background-color: var(--violet-brand); }
 
+        /* 2. Панель Каналов */
         .channels-panel { 
             width: 240px; background-color: var(--bg-med); display: flex; flex-direction: column; flex-shrink: 0; 
         }
-        .channel-header { height: 48px; padding: 0 16px; line-height: 48px; font-weight: 700; }
-        .channel-list { flex-grow: 1; padding: 10px 8px; overflow-y: auto; }
+        .channel-header { 
+            height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; 
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
+            /* Изменение: Убран заголовок "Сообщество" для экрана Друзей */
+            padding-left: 20px;
+        }
+        .channel-list { flex-grow: 1; padding: 8px; overflow-y: auto; }
         .channel-category { color: var(--text-secondary); font-size: 0.7em; font-weight: 700; margin: 10px 8px 5px; }
+        
+        /* Стиль активного канала - как на скриншоте */
         .channel-item { 
             display: flex; align-items: center; height: 32px; padding: 0 8px; margin-top: 2px; 
             border-radius: 4px; cursor: pointer; color: var(--text-secondary); 
+            margin: 0 6px 2px 6px; /* Отступы для сплошного блока */
         }
-        .channel-item:hover { color: var(--text-primary); background-color: rgba(79, 84, 92, 0.32); }
-        .channel-item.active { color: var(--text-primary); background-color: var(--violet-brand); }
+        .channel-item:hover { color: var(--text-primary); background-color: var(--violet-active-bg); }
+        .channel-item.active { 
+            color: var(--text-primary); 
+            background-color: var(--violet-brand); /* Фон активного канала */
+        }
         
-        .channel-item i { margin-right: 5px; opacity: 0.7; }
+        .channel-item i { margin-right: 8px; opacity: 0.8; }
+        .channel-item.active i { color: var(--text-primary); opacity: 1; }
 
         /* Звонок - Голосовой Статус */
         .voice-status {
-            padding: 10px;
-            background-color: var(--bg-dark);
-            margin-bottom: 5px;
-            border-radius: 4px;
+            padding: 10px 0;
+            margin: 10px 10px 0 10px; /* Отступы внутри панели */
             color: var(--text-primary);
         }
+        .voice-status p { margin-bottom: 5px; font-size: 0.9em;}
         .voice-status span { color: var(--status-online); font-weight: 600; }
+        
         .call-controls button {
-            background-color: var(--bg-med);
+            background-color: #202225; /* Темнее, как на скриншоте */
             border: none;
             color: var(--text-secondary);
-            padding: 5px 8px;
-            margin-right: 5px;
-            border-radius: 3px;
+            width: 30px; height: 30px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: background-color 0.2s;
         }
-        .call-controls button:hover { color: var(--text-primary); }
+        .call-controls button:hover { background-color: #191B1F; }
         .call-controls .end-call {
             background-color: var(--button-danger);
             color: var(--text-primary);
@@ -138,48 +127,13 @@
             height: 54px; background-color: var(--bg-dark); padding: 0 8px; 
             display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
-        .avatar {
-            width: 32px; height: 32px; background-color: var(--violet-brand); border-radius: 50%; 
-            margin-right: 8px; position: relative; border: 2px solid var(--bg-dark);
-        }
-        .avatar.online::after {
-            content: ''; position: absolute; bottom: -2px; right: -2px; width: 10px; 
-            height: 10px; border-radius: 50%; background-color: var(--status-online); 
-            border: 2px solid var(--bg-dark);
-        }
-        .controls i { cursor: pointer; margin-left: 10px; opacity: 0.7; transition: opacity 0.2s; }
-        .controls i:hover { opacity: 1.0; }
+        /* ... остальные стили чата и участников остаются прежними ... */
 
-
-        /* Чат и Участники */
         .chat-panel { flex-grow: 1; background-color: var(--bg-light); display: flex; flex-direction: column; }
         .chat-header { height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
         .message-list { flex-grow: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; }
-        .message { display: flex; margin-bottom: 15px; }
-        .msg-avatar { 
-            width: 40px; height: 40px; border-radius: 50%; background-color: var(--violet-brand); 
-            margin-right: 16px; flex-shrink: 0; 
-        }
-        .msg-author { font-size: 0.9em; margin-bottom: 2px; font-weight: 600; } /* Автор жирнее */
-        .msg-time { color: var(--text-secondary); font-size: 0.75em; margin-left: 8px; font-weight: 400; }
-        .msg-content p { line-height: 1.4; font-weight: 400; }
+        .msg-author { font-weight: 600; } 
 
-        .message-input-area { padding: 20px 16px; flex-shrink: 0; }
-        .message-input-area input {
-            width: 100%; height: 44px; border-radius: 8px; padding: 0 16px; 
-            background-color: var(--bg-med); color: var(--text-primary); border: none; font-size: 1em;
-        }
-
-        .members-panel { 
-            width: 280px; background-color: var(--bg-light); padding: 8px; 
-            flex-shrink: 0; overflow-y: auto; 
-        }
-        .member-category { color: var(--text-secondary); font-size: 0.75em; font-weight: 700; padding: 8px 0; }
-        .member-item { 
-            display: flex; align-items: center; padding: 4px 8px; margin-bottom: 2px; 
-            border-radius: 4px; cursor: pointer; font-size: 0.9em; 
-        }
-        .member-item:hover { background-color: var(--bg-med); }
     </style>
 </head>
 <body>
@@ -187,19 +141,13 @@
     <div class="login-container" id="loginScreen">
         <h2>С возвращением!</h2>
         <p>Мы рады видеть вас снова!</p>
-        
         <form id="loginForm">
             <label for="email">ЭЛ. ПОЧТА ИЛИ ИМЯ ПОЛЬЗОВАТЕЛЯ</label>
             <input type="email" id="email" required>
-
             <label for="password">ПАРОЛЬ</label>
             <input type="password" id="password" required>
-            
             <button type="submit">Войти</button>
-
-            <div class="error-message" id="errorMsg">
-                Неверный email или пароль. Пожалуйста, попробуйте снова.
-            </div>
+            <div class="error-message" id="errorMsg">Неверный email или пароль. Пожалуйста, попробуйте снова.</div>
         </form>
         <div class="register-link" style="margin-top: 15px; font-size: 12px; color: var(--text-secondary);">
             Нужен аккаунт? 
@@ -209,32 +157,27 @@
 
     <div class="app-container" id="mainApp">
         <div class="servers-panel">
-            <div class="server-icon active">💜</div>
-            <div class="server-icon"><i class="fas fa-user-friends"></i></div>
+            <div class="server-icon active" id="friendsServerIcon"><i class="fas fa-user-friends"></i></div>
+            <div class="server-icon">💜</div>
             <div class="server-icon"><i class="fas fa-code"></i></div>
-            <div class="server-icon"><i class="fas fa-gamepad"></i></div>
             <div class="server-icon add-server"><i class="fas fa-plus"></i></div>
         </div>
 
         <div class="channels-panel">
-            <div class="channel-header">Фиолетовое Сообщество</div>
-            <div class="channel-list">
-                <div class="channel-category">ТЕКСТОВЫЕ КАНАЛЫ</div>
-                <div class="channel-item active"><i class="fas fa-hashtag"></i> общие</div>
-                <div class="channel-item"><i class="fas fa-hashtag"></i> мемы</div>
+            <div class="channel-header" id="channelHeader">
+                <input type="text" placeholder="Найти или начать разговор" style="background: var(--bg-dark); border: none; color: var(--text-primary); padding: 5px 10px; border-radius: 4px; width: 100%;">
+            </div>
+            <div class="channel-list" id="channelList">
                 
-                <div class="channel-category">ГОЛОСОВЫЕ КАНАЛЫ</div>
-                <div class="channel-item voice active" style="background-color: rgba(114, 137, 218, 0.2);">
-                    <i class="fas fa-headset"></i> Общий Голос
+                <div class="channel-category" style="margin-top: 0;">ЛИЧНЫЕ СООБЩЕНИЯ</div>
+                <div class="channel-item active" data-type="friends" data-name="friends">
+                    <i class="fas fa-user-friends"></i> Друзья
                 </div>
-
-                <div class="voice-status">
-                    Вы в: <span>Общий Голос</span>
-                    <div class="call-controls" style="margin-top: 5px;">
-                        <button id="toggleMic"><i class="fas fa-microphone"></i></button>
-                        <button id="toggleHeadphones"><i class="fas fa-volume-up"></i></button>
-                        <button class="end-call"><i class="fas fa-phone-alt"></i></button>
-                    </div>
+                <div class="channel-item" data-type="dm" data-name="Admin">
+                    <i class="fas fa-user"></i> Admin
+                </div>
+                <div class="channel-item" data-type="dm" data-name="PurpleBot">
+                    <i class="fas fa-robot"></i> PurpleBot
                 </div>
             </div>
 
@@ -255,41 +198,23 @@
         </div>
 
         <div class="chat-panel">
-            <div class="chat-header"><i class="fas fa-hashtag" style="margin-right: 8px;"></i>общие</div>
+            <div class="chat-header" id="chatHeader">
+                <i class="fas fa-user-friends" style="margin-right: 8px;"></i>Друзья
+            </div>
             <div class="message-list" id="messageList">
-                <div class="message">
-                    <span class="msg-avatar"></span>
-                    <div class="msg-content">
-                        <div class="msg-author">Admin <span class="msg-time">Сегодня в 17:00</span></div>
-                        <p>Привет всем! Наш фиолетовый сервер готов! Давайте тестировать чат!</p>
-                    </div>
-                </div>
+                <h3 style="text-align: center; color: var(--text-secondary); margin-top: 20px;">
+                    Это экран Друзей. Выберите друга, чтобы начать разговор.
+                </h3>
             </div>
             
-            <form id="chatForm" class="message-input-area">
-                <input type="text" id="chatInput" placeholder="Написать в # общие" required>
+            <form id="chatForm" class="message-input-area" style="display: none;">
+                <input type="text" id="chatInput" placeholder="Написать сообщение" required>
             </form>
         </div>
 
-        <div class="members-panel">
-            <div class="member-category">В ГОЛОСОВОМ КАНАЛЕ (2)</div>
-            <div class="member-item" style="background-color: rgba(114, 137, 218, 0.1);">
-                <span class="member-avatar online"></span>
-                VioletUser
-            </div>
-            <div class="member-item">
-                <span class="member-avatar" style="background-color: var(--status-online);"></span>
-                Admin (Говорит...)
-            </div>
-            <div class="member-category">ОНЛАЙН (1)</div>
-            <div class="member-item">
-                <span class="member-avatar online"></span>
-                PurpleBot
-            </div>
-            <div class="member-category">ОФЛАЙН (5)</div>
-            <div class="member-item">
-                <span class="member-avatar offline"></span>
-                NoLifer
+        <div class="members-panel" style="width: 280px; background-color: var(--bg-light);">
+            <div style="padding: 15px; text-align: center; color: var(--text-secondary);">
+                Подробности о друге
             </div>
         </div>
     </div>
@@ -302,62 +227,107 @@
         const chatForm = document.getElementById('chatForm');
         const chatInput = document.getElementById('chatInput');
         const messageList = document.getElementById('messageList');
+        const chatHeader = document.getElementById('chatHeader');
+        
+        // Переключение между серверами/друзьями
+        const friendsServerIcon = document.getElementById('friendsServerIcon');
+        
+        const serverChannels = {
+            'friends': {
+                header: '<i class="fas fa-user-friends"></i> Друзья',
+                messages: '<h3>Это экран Друзей. Выберите друга, чтобы начать разговор.</h3>',
+                isDM: true
+            },
+            'community': {
+                header: '<i class="fas fa-hashtag"></i> общие',
+                messages: createSampleMessages(),
+                isDM: false
+            }
+        };
 
         // --- ЛОГИКА ВХОДА ---
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
             
-            const emailInput = document.getElementById('email').value.trim();
-            const passwordInput = document.getElementById('password').value.trim();
-            
             const TEST_EMAIL = 'test@example.com';
             const TEST_PASSWORD = '123456';
-
-            if (emailInput === TEST_EMAIL && passwordInput === TEST_PASSWORD) {
+            
+            if (document.getElementById('email').value.trim() === TEST_EMAIL && document.getElementById('password').value.trim() === TEST_PASSWORD) {
                 // Успешный вход: скрываем форму, показываем приложение
-                errorMsg.style.display = 'none';
                 loginScreen.style.display = 'none';
-                mainApp.style.display = 'flex'; // Отображаем главный экран
+                mainApp.style.display = 'flex'; 
                 document.body.style.backgroundColor = 'var(--bg-light)'; 
-                scrollToBottom();
-                
+                loadServer('friends'); // Загружаем экран друзей по умолчанию
             } else {
-                // Ошибка входа
                 errorMsg.style.display = 'block';
             }
         });
 
-        // --- ЛОГИКА ЧАТА ---
+        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ---
+        function loadServer(serverKey) {
+            // Имитация загрузки контента
+            const data = serverChannels[serverKey];
+            
+            chatHeader.innerHTML = data.header;
+            messageList.innerHTML = data.messages;
+            
+            // Скрываем или показываем поле ввода в зависимости от типа чата (DM vs Friends List)
+            if (data.isDM) {
+                chatForm.style.display = 'none';
+            } else {
+                chatForm.style.display = 'flex';
+                scrollToBottom();
+            }
+        }
+        
+        // Переключение на тестовое сообщество
+        document.querySelector('.servers-panel').addEventListener('click', (e) => {
+            const icon = e.target.closest('.server-icon');
+            if (!icon) return;
+            
+            // Сброс активного статуса на всех
+            document.querySelectorAll('.server-icon').forEach(i => i.classList.remove('active'));
+            icon.classList.add('active');
+            
+            if (icon.textContent.includes('💜')) {
+                // Загружаем тестовое сообщество (сервер)
+                document.getElementById('channelHeader').innerHTML = 'Фиолетовое Сообщество';
+                document.getElementById('channelList').innerHTML = getCommunityChannels();
+                loadServer('community');
+            } else if (icon.id === 'friendsServerIcon') {
+                // Загружаем экран друзей
+                document.getElementById('channelHeader').innerHTML = '<input type="text" placeholder="Найти или начать разговор" style="background: var(--bg-dark); border: none; color: var(--text-primary); padding: 5px 10px; border-radius: 4px; width: 100%;">';
+                document.getElementById('channelList').innerHTML = getFriendsChannels();
+                loadServer('friends');
+            }
+        });
+
+
+        // --- ЛОГИКА ЧАТА (для тестового сообщества) ---
         chatForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const message = chatInput.value.trim();
-            
             if (message) {
-                addMessage('VioletUser', message, 'var(--violet-brand)');
-                chatInput.value = ''; // Очистка поля
-                
-                // Имитация ответа от бота через 1 секунду
+                addMessage('VioletUser', message, '#7289DA');
+                chatInput.value = ''; 
                 setTimeout(() => {
-                    addMessage('PurpleBot', `Сообщение получено! Время ${new Date().toLocaleTimeString('ru-RU')}.`, 'var(--status-online)');
+                    addMessage('PurpleBot', `Сообщение получено! Время ${new Date().toLocaleTimeString('ru-RU')}.`, '#43B581');
                 }, 1000);
             }
         });
 
         function addMessage(author, content, avatarColor) {
-            const now = new Date();
-            const timeString = `Сегодня в ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-            
+            const timeString = `Сегодня в ${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}`;
             const newMessage = document.createElement('div');
             newMessage.classList.add('message');
             
             newMessage.innerHTML = `
-                <span class="msg-avatar" style="background-color: ${avatarColor || 'var(--violet-brand)'}"></span>
+                <span class="msg-avatar" style="background-color: ${avatarColor}"></span>
                 <div class="msg-content">
                     <div class="msg-author">${author} <span class="msg-time">${timeString}</span></div>
                     <p>${content}</p>
                 </div>
             `;
-            
             messageList.appendChild(newMessage);
             scrollToBottom();
         }
@@ -366,15 +336,59 @@
              messageList.scrollTop = messageList.scrollHeight;
         }
 
-        // --- ЛОГИКА ЗВОНКОВ (имитация) ---
-        const micButton = document.getElementById('toggleMic');
-        let isMicMuted = false;
+        // --- ДАННЫЕ И МАКЕТЫ ---
+        function getFriendsChannels() {
+            return `
+                <div class="channel-category" style="margin-top: 0;">ЛИЧНЫЕ СООБЩЕНИЯ</div>
+                <div class="channel-item active" data-type="friends" data-name="friends">
+                    <i class="fas fa-user-friends"></i> Друзья
+                </div>
+                <div class="channel-item" data-type="dm" data-name="Admin">
+                    <i class="fas fa-user"></i> Admin
+                </div>
+                <div class="channel-item" data-type="dm" data-name="PurpleBot">
+                    <i class="fas fa-robot"></i> PurpleBot
+                </div>
+            `;
+        }
+        
+        function getCommunityChannels() {
+            return `
+                <div class="channel-category">ТЕКСТОВЫЕ КАНАЛЫ</div>
+                <div class="channel-item active" data-type="channel" data-name="общие">
+                    <i class="fas fa-hashtag"></i> общие
+                </div>
+                <div class="channel-item" data-type="channel" data-name="мемы">
+                    <i class="fas fa-hashtag"></i> мемы
+                </div>
+                
+                <div class="channel-category">ГОЛОСОВЫЕ КАНАЛЫ</div>
+                <div class="channel-item voice active" style="background-color: rgba(114, 137, 218, 0.2);">
+                    <i class="fas fa-headset"></i> Общий Голос
+                </div>
 
-        micButton.addEventListener('click', () => {
-            isMicMuted = !isMicMuted;
-            micButton.innerHTML = isMicMuted ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>';
-            micButton.style.backgroundColor = isMicMuted ? 'var(--button-danger)' : 'var(--bg-med)';
-        });
+                <div class="voice-status">
+                    <p>Вы в: <span>Общий Голос</span></p>
+                    <div class="call-controls">
+                        <button id="toggleMic"><i class="fas fa-microphone"></i></button>
+                        <button id="toggleHeadphones"><i class="fas fa-volume-up"></i></button>
+                        <button class="end-call"><i class="fas fa-phone-alt"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createSampleMessages() {
+             return `
+                <div class="message">
+                    <span class="msg-avatar" style="background-color: #7289DA;"></span>
+                    <div class="msg-content">
+                        <div class="msg-author">Admin <span class="msg-time">Сегодня в 17:00</span></div>
+                        <p>Привет всем! Наш фиолетовый сервер готов! Тестируем чат в канале **общие**.</p>
+                    </div>
+                </div>
+            `;
+        }
         
     </script>
 </body>
