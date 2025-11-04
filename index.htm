@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Clone: Исправление Сессии</title>
+    <title>Discord Clone: Исправление Дискриминатора</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -26,7 +26,7 @@
             --red-delete: #F04747;
         }
 
-        /* (Стили UI - без изменений, кроме добавления --red-delete) */
+        /* (Стили UI - без изменений) */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); }
         body, html { height: 100%; overflow: hidden; background: var(--bg-dark); transition: background-color 0.5s; }
 
@@ -92,10 +92,7 @@
         .friend-actions i { color: var(--text-secondary); cursor: pointer; margin-left: 10px; transition: color 0.15s; }
         .friend-actions i:hover { color: var(--text-primary); }
 
-        /* Специальный стиль для кнопки удаления */
-        .friend-actions .fa-user-times:hover {
-            color: var(--red-delete);
-        }
+        .friend-actions .fa-user-times:hover { color: var(--red-delete); }
 
         /* --- СТИЛИ ДЛЯ ФОРМЫ ДОБАВЛЕНИЯ --- */
         .add-friend-form-container { margin-bottom: 25px; padding: 10px; background-color: var(--bg-light); border-radius: 8px; }
@@ -188,7 +185,7 @@
                     <span class="avatar online" id="currentUserAvatar"></span>
                     <div class="username-tag">
                         <strong style="font-weight: 600;" id="currentUsername">VioletUser</strong>
-                        <span style="font-size: 0.7em; color: var(--text-secondary); font-weight: 400;">#0001</span>
+                        <span style="font-size: 0.7em; color: var(--text-secondary); font-weight: 400;" id="currentUserDiscriminator">#0000</span>
                     </div>
                 </div>
                 <div class="controls">
@@ -233,10 +230,11 @@
         const messageList = document.getElementById('messageList');
         const chatForm = document.getElementById('chatForm');
         const currentUsernameEl = document.getElementById('currentUsername');
+        const currentUserDiscriminatorEl = document.getElementById('currentUserDiscriminator'); // НОВЫЙ ЭЛЕМЕНТ
         const logoutButton = document.getElementById('logoutButton');
 
         const USER_TOKEN_KEY = 'discordCloneUserToken';
-        let currentActiveUser = null; // Глобальный объект для текущего пользователя (будет обновляться)
+        let currentActiveUser = null; 
 
         // --- ДАННЫЕ (ИМИТАЦИЯ) ---
         const contentData = {
@@ -247,6 +245,12 @@
         };
 
         // --- ФУНКЦИИ УПРАВЛЕНИЯ ДАННЫМИ (Local Storage) ---
+        
+        function generateDiscriminator() {
+            // Генерирует случайное 4-значное число (0000-9999)
+            return '#' + Math.floor(1000 + Math.random() * 9000);
+        }
+
         function generateToken() {
             return 'token-' + Date.now().toString(36) + Math.random().toString(36).substr(2);
         }
@@ -262,8 +266,18 @@
             return getAllUsers().find(u => u.email === email);
         }
 
-        function findUserByUsername(username) {
-            return getAllUsers().find(u => u.username.toLowerCase() === username.toLowerCase());
+        function findUserByTag(tag) {
+            // Ожидаемый формат: Username#XXXX
+            const parts = tag.split('#');
+            if (parts.length !== 2) return null;
+
+            const username = parts[0];
+            const discriminator = '#' + parts[1]; // Добавляем # обратно для поиска
+
+            // Ищем строгое совпадение по имени и дискриминатору (регистрозависимо)
+            return getAllUsers().find(u => 
+                u.username === username && u.discriminator === discriminator
+            );
         }
 
         function findUserByToken(token) {
@@ -280,7 +294,6 @@
         // --- ФУНКЦИИ СЕССИИ И АУТЕНТИФИКАЦИИ ---
 
         function initializeApp(user) {
-            // !!! Ключевое изменение: обновляем глобальный объект здесь
             currentActiveUser = user; 
             
             if (!user.friends) {
@@ -291,7 +304,11 @@
             loginScreen.style.display = 'none';
             mainApp.style.display = 'flex';
             document.body.style.backgroundColor = 'var(--bg-med)';
+            
+            // !!! Обновляем UI, используя реальные данные дискриминатора
             currentUsernameEl.textContent = user.username;
+            currentUserDiscriminatorEl.textContent = user.discriminator || '#0000'; 
+            
             loadContent('friends-home');
         }
 
@@ -314,33 +331,32 @@
 
         // --- ЛОГИКА ДОБАВЛЕНИЯ/УДАЛЕНИЯ ДРУЗЕЙ ---
 
-        function addFriendLogic(friendUsername) {
+        function addFriendLogic(friendTag) { // Теперь принимаем полный тег
             const token = localStorage.getItem(USER_TOKEN_KEY);
-            // Получаем самую свежую версию текущего пользователя из хранилища!
             let activeUser = findUserByToken(token); 
 
             const msgEl = document.getElementById('addFriendMessage');
             msgEl.style.display = 'none';
 
             if (!activeUser) {
-                // Если нет активного пользователя (что не должно происходить в этом состоянии)
                 msgEl.textContent = 'Ошибка сессии. Попробуйте войти снова.';
                 msgEl.className = 'add-friend-message message-error';
                 msgEl.style.display = 'block';
                 return;
             }
 
-            if (!friendUsername.trim()) {
-                msgEl.textContent = 'Введите имя пользователя.';
+            if (!friendTag.trim() || friendTag.indexOf('#') === -1 || friendTag.split('#').length !== 2) {
+                msgEl.textContent = 'Пожалуйста, введите полный тег друга (Например: UserA#1234).';
                 msgEl.className = 'add-friend-message message-error';
                 msgEl.style.display = 'block';
                 return;
             }
 
-            const friend = findUserByUsername(friendUsername);
+            // Ищем по полному тегу
+            const friend = findUserByTag(friendTag); 
 
             if (!friend) {
-                msgEl.textContent = `Пользователь с именем "${friendUsername}" не найден.`;
+                msgEl.textContent = `Пользователь с тегом "${friendTag}" не найден.`;
                 msgEl.className = 'add-friend-message message-error';
                 msgEl.style.display = 'block';
                 return;
@@ -360,11 +376,11 @@
                 return;
             }
 
-            // Добавление (для простоты добавляем сразу, без запросов)
+            // Добавление
             activeUser.friends.push(friend.id);
             saveUser(activeUser);
             
-            // Обновляем список друга (двустороннее добавление)
+            // Двустороннее добавление
             if (!friend.friends) friend.friends = [];
             if (!friend.friends.includes(activeUser.id)) {
                 friend.friends.push(activeUser.id);
@@ -375,7 +391,6 @@
             msgEl.className = 'add-friend-message message-success';
             msgEl.style.display = 'block';
             
-            // !!! Обновляем глобальный объект и UI с новыми данными
             initializeApp(activeUser); 
         }
 
@@ -388,24 +403,22 @@
 
             if (!activeUser || !friendToRemove) return;
 
-            // 1. Удаление из списка текущего пользователя
+            // Удаление из списка текущего пользователя
             activeUser.friends = activeUser.friends.filter(id => id !== friendId);
             saveUser(activeUser);
 
-            // 2. Удаление из списка друга
+            // Удаление из списка друга
             if (friendToRemove.friends) {
                 friendToRemove.friends = friendToRemove.friends.filter(id => id !== activeUser.id);
                 saveUser(friendToRemove);
             }
 
-            // !!! Обновляем глобальный объект и UI с новыми данными
             initializeApp(activeUser);
         }
         
         // --- ФОРМИРОВАНИЕ HTML КОНТЕНТА ---
 
         function getFriendsHomeContent() {
-            // Используем самую свежую версию
             const friends = currentActiveUser.friends.map(friendId => 
                 getAllUsers().find(u => u.id === friendId)
             ).filter(f => f !== undefined);
@@ -413,7 +426,7 @@
             let friendsListHTML = '';
             
             if (friends.length === 0) {
-                friendsListHTML = `<p style="color: var(--text-secondary); font-size: 14px; margin-top: 15px; padding: 0 10px;">Начните добавлять друзей по имени пользователя.</p>`;
+                friendsListHTML = `<p style="color: var(--text-secondary); font-size: 14px; margin-top: 15px; padding: 0 10px;">Начните добавлять друзей с помощью полного тега (Имя#XXXX).</p>`;
             } else {
                 friendsListHTML = friends.map(friend => `
                     <div class="friends-list-item" data-friend-id="${friend.id}">
@@ -424,6 +437,7 @@
                             <div class="friend-name-tag">
                                 <strong>${friend.username}</strong>
                                 <small>В сети</small>
+                                <small style="color: var(--text-secondary); margin-left: 5px;">${friend.discriminator || '#0000'}</small>
                             </div>
                         </div>
                         <div class="friend-actions">
@@ -438,9 +452,9 @@
                 <div class="friends-content" style="padding: 0 10px;">
                     <div class="add-friend-form-container">
                         <h3>ДОБАВИТЬ В ДРУЗЬЯ</h3>
-                        <p>Вы можете добавить друга с помощью его имени пользователя. Имена чувствительны к регистру.</p>
+                        <p>Вы можете добавить друга с помощью его полного тега (например, ${currentActiveUser.username}#${(currentActiveUser.discriminator || '#0000').substring(1)}).</p>
                         <form id="addFriendForm" class="add-friend-input-group">
-                            <input type="text" id="friendUsernameInput" placeholder="Введите имя пользователя">
+                            <input type="text" id="friendTagInput" placeholder="Введите имя пользователя#дискриминатор">
                             <button type="submit">Отправить запрос</button>
                         </form>
                         <div id="addFriendMessage" class="add-friend-message"></div>
@@ -458,7 +472,6 @@
         function getNitroContent() { return `<div class="friends-content"><h2>DISCORD NITRO</h2><p style="color: var(--text-secondary); font-size: 14px;">Покупайте Nitro и поддержите нас!</p></div>`; }
         function getStoreContent() { return `<div class="friends-content"><h2>МАГАЗИН</h2><p style="color: var(--text-secondary); font-size: 14px;">Эксклюзивные товары.</p></div>`; }
         function getTasksContent() { return `<div class="friends-content"><h2>ЗАДАНИЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Нет активных заданий.</p></div>`; }
-        
         function getFriendsNav() {
             return `
                 <div class="nav-item active-tab" data-target="friends-home">
@@ -500,13 +513,12 @@
                 if (addFriendForm) {
                     addFriendForm.addEventListener('submit', function(e) {
                         e.preventDefault();
-                        const usernameInput = document.getElementById('friendUsernameInput');
-                        addFriendLogic(usernameInput.value);
-                        usernameInput.value = '';
+                        const tagInput = document.getElementById('friendTagInput');
+                        addFriendLogic(tagInput.value);
+                        tagInput.value = '';
                     });
                 }
                 
-                // Обработчик кликов для удаления друга (для динамически загруженных элементов)
                 if (friendsListContainer) {
                     friendsListContainer.addEventListener('click', function(e) {
                         const removeBtn = e.target.closest('.remove-friend-btn');
@@ -519,6 +531,44 @@
             }
         }
         
+        // --- ОБРАБОТЧИКИ АУТЕНТИФИКАЦИИ И ИНИЦИАЛИЗАЦИЯ ---
+
+        registerForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            registerErrorMsg.style.display = 'none';
+            registerSuccessMsg.style.display = 'none';
+            const email = document.getElementById('regEmail').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            
+            if (!email || !username || !password) {
+                registerErrorMsg.textContent = 'Пожалуйста, заполните все поля.';
+                registerErrorMsg.style.display = 'block';
+                return;
+            }
+            if (findUserByEmail(email)) {
+                registerErrorMsg.textContent = 'Пользователь с таким email уже существует.';
+                registerErrorMsg.style.display = 'block';
+                return;
+            }
+
+            // !!! Генерируем уникальный дискриминатор
+            const newUser = {
+                email: email,
+                username: username,
+                password: encryptPassword(password), 
+                token: null,
+                id: Date.now().toString(),
+                friends: [],
+                discriminator: generateDiscriminator() 
+            };
+            
+            saveUser(newUser);
+            registerSuccessMsg.style.display = 'block';
+            registerForm.reset(); 
+            setTimeout(() => { showScreen('login'); }, 1500);
+        });
+
         // (Остальные обработчики - без изменений)
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -531,37 +581,6 @@
             } else {
                 loginErrorMsg.style.display = 'block';
             }
-        });
-
-        registerForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            registerErrorMsg.style.display = 'none';
-            registerSuccessMsg.style.display = 'none';
-            const email = document.getElementById('regEmail').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value.trim();
-            if (!email || !username || !password) {
-                registerErrorMsg.textContent = 'Пожалуйста, заполните все поля.';
-                registerErrorMsg.style.display = 'block';
-                return;
-            }
-            if (findUserByEmail(email)) {
-                registerErrorMsg.textContent = 'Пользователь с таким email уже существует.';
-                registerErrorMsg.style.display = 'block';
-                return;
-            }
-            const newUser = {
-                email: email,
-                username: username,
-                password: encryptPassword(password), 
-                token: null,
-                id: Date.now().toString(),
-                friends: [] 
-            };
-            saveUser(newUser);
-            registerSuccessMsg.style.display = 'block';
-            registerForm.reset(); 
-            setTimeout(() => { showScreen('login'); }, 1500);
         });
 
         logoutButton.addEventListener('click', logoutUser);
@@ -597,6 +616,10 @@
             }
             showScreen('login');
         }
+        
+        // !!! ПРИМЕЧАНИЕ: После внесения этих изменений, вам нужно очистить localStorage
+        // и заново зарегистрировать пользователей, чтобы им присвоились дискриминаторы.
+        
         checkSessionToken(); 
     </script>
 </body>
