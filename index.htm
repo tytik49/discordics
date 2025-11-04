@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Clone: Анимации</title>
+    <title>Discord Clone: Долгая Сессия</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        /* CSS Переменные */
+        /* (Стили остаются без изменений, чтобы сохранить внешний вид) */
         :root {
             --bg-dark: #202225; 
             --bg-med: #2F3136; 
@@ -55,14 +55,14 @@
             width: 100%; padding: 10px; background-color: var(--bg-dark); 
             border: 1px solid #202225; border-radius: 3px; color: var(--text-primary); 
             font-size: 16px; 
-            transition: border-color 0.2s; /* Анимация: Плавная смена рамки */
+            transition: border-color 0.2s; 
         }
         .auth-container input:focus { border-color: var(--violet-brand); outline: none; }
         .auth-container button {
             width: 100%; padding: 10px; margin-top: 20px; background-color: var(--violet-brand);
             border: none; border-radius: 3px; color: var(--text-primary); font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s; /* Анимация: Плавная смена фона */
+            transition: background-color 0.2s; 
         }
         .auth-container button:hover { background-color: #4048c1; } 
         .auth-container .error-message { color: var(--unread-badge); margin-top: 15px; font-size: 14px; display: none; }
@@ -78,19 +78,13 @@
         
         /* 2.1. Панель Серверов */
         .servers-panel { width: 72px; background-color: #1E1F22; padding: 10px 0; flex-shrink: 0; overflow-y: auto; }
-        
-        /* Анимация: Общие стили для иконок серверов */
         .server-icon { 
             width: 50px; height: 50px; background-color: #36393F; 
             margin: 8px auto; display: flex; align-items: center; justify-content: center; 
             color: var(--text-primary); font-size: 1.5em; cursor: pointer; position: relative;
-            
-            /* Плавные переходы для формы и цвета */
             transition: border-radius 0.25s ease-out, background-color 0.25s ease-out; 
-            border-radius: 50%; /* Базовая форма - круг */
+            border-radius: 50%; 
         }
-
-        /* Иконка Discord (Друзья) - всегда круг, но имеет hover-эффект */
         #friendsServerIcon {
             background-color: var(--violet-brand);
             border-radius: 50%; 
@@ -98,20 +92,19 @@
         }
         #friendsServerIcon:hover { 
             background-color: var(--violet-brand); 
-            border-radius: 50%; /* Оставляем круг */
-            transform: scale(1.05); /* Легкое увеличение */
+            border-radius: 50%; 
+            transform: scale(1.05); 
         } 
         
-        /* Кнопка добавления сервера */
         .server-icon.add-server {
             background-color: #36393F;
             border-radius: 50%;
             font-size: 1.5em;
         }
         .server-icon.add-server:hover {
-            background-color: var(--status-online); /* Зеленый при наведении */
+            background-color: var(--status-online); 
             border-radius: 50%;
-            transform: rotate(90deg); /* Анимация: Легкий поворот */
+            transform: rotate(90deg); 
         }
 
         .server-icon .badge {
@@ -135,25 +128,23 @@
 
         .channel-list { flex-grow: 1; padding: 8px; overflow-y: auto; }
         
-        /* Анимация: Элементы навигации/списка */
         .nav-item {
             display: flex; align-items: center; height: 42px; padding: 0 8px; 
             border-radius: 4px; cursor: pointer; color: var(--text-secondary); 
             margin: 0 6px 2px 6px; font-size: 16px; font-weight: 500;
-            
-            transition: background-color 0.15s, color 0.15s, transform 0.05s; /* Плавный ховер */
+            transition: background-color 0.15s, color 0.15s, transform 0.05s; 
         }
         .nav-item:hover { 
             color: var(--text-primary); 
             background-color: var(--violet-active-bg); 
         }
         .nav-item:active {
-            transform: scale(0.98); /* Анимация: Имитация нажатия */
+            transform: scale(0.98); 
         }
         .nav-item.active-tab { 
             color: var(--text-primary); 
             background-color: var(--violet-active-bg); 
-            font-weight: 600; /* Выделение активного элемента */
+            font-weight: 600; 
         }
         .nav-item i { margin-right: 12px; font-size: 1.2em; width: 20px; text-align: center; }
 
@@ -167,7 +158,6 @@
             height: 54px; background-color: #23272A; padding: 0 8px; 
             display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
-        /* Анимация: Иконки управления */
         .user-settings .controls i {
             color: var(--text-secondary);
             cursor: pointer;
@@ -196,7 +186,7 @@
             transition: background-color 0.2s;
         }
         .message-input-area input:focus {
-            background-color: #40444B; /* Небольшое затемнение при фокусе */
+            background-color: #40444B; 
         }
     </style>
 </head>
@@ -285,6 +275,7 @@
                     <i class="fas fa-cog"></i> 
                     <i class="fas fa-headset"></i> 
                     <i class="fas fa-microphone-slash"></i>
+                    <i class="fas fa-sign-out-alt" id="logoutButton" title="Выйти"></i>
                 </div>
             </div>
         </div>
@@ -306,7 +297,7 @@
     </div>
 
     <script>
-        // --- Логика JS (без изменений) ---
+        // --- Элементы UI ---
         const loginScreen = document.getElementById('loginScreen');
         const registerScreen = document.getElementById('registerScreen');
         const mainApp = document.getElementById('mainApp');
@@ -322,11 +313,12 @@
         const messageList = document.getElementById('messageList');
         const chatForm = document.getElementById('chatForm');
         const membersPanel = document.querySelector('.members-panel');
-        const currentUserAvatar = document.getElementById('currentUserAvatar');
         const currentUsername = document.getElementById('currentUsername');
+        const logoutButton = document.getElementById('logoutButton'); // Кнопка выхода
 
-        let currentActiveUser = null; 
+        const USER_TOKEN_KEY = 'discordCloneUserToken';
 
+        // --- ДАННЫЕ (ИМИТАЦИЯ) ---
         const contentData = {
             'friends-home': { title: 'Друзья', icon: 'fas fa-user-friends', content: getFriendsHomeContent(), hasInput: false },
             'nitro': { title: 'Nitro', icon: 'fas fa-crown', content: getNitroContent(), hasInput: false },
@@ -334,59 +326,120 @@
             'tasks': { title: 'Задания', icon: 'fas fa-cog', content: getTasksContent(), hasInput: false },
         };
 
+        // --- ФУНКЦИИ БЕЗОПАСНОСТИ/СЕССИИ ---
+
+        function generateToken() {
+            // Простой уникальный токен на основе времени и случайного числа
+            return 'token-' + Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
         function encryptPassword(password) { return btoa(password); }
         function decryptPassword(encodedPassword) { return atob(encodedPassword); }
 
+        function findUserByEmail(email) {
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+            return storedUsers.find(u => u.email === email);
+        }
+
+        function findUserByToken(token) {
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+            return storedUsers.find(u => u.token === token);
+        }
+
+        function saveUser(user) {
+            let storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+            storedUsers = storedUsers.filter(u => u.email !== user.email); // Удалить старую запись
+            storedUsers.push(user);
+            localStorage.setItem('users', JSON.stringify(storedUsers));
+        }
+
+        function loginUser(user) {
+            // 1. Создать/обновить токен
+            const token = generateToken();
+            user.token = token;
+            
+            // 2. Сохранить токен и обновить пользователя
+            saveUser(user);
+            
+            // 3. Сохранить токен в ключе сессии (долгая сессия)
+            localStorage.setItem(USER_TOKEN_KEY, token);
+
+            // 4. Загрузить UI
+            loginScreen.style.display = 'none';
+            mainApp.style.display = 'flex';
+            document.body.style.backgroundColor = 'var(--bg-med)';
+            currentUsername.textContent = user.username;
+            loadContent('friends-home');
+        }
+
+        function logoutUser() {
+            // 1. Очистить токен из хранилища
+            localStorage.removeItem(USER_TOKEN_KEY);
+            
+            // 2. Сбросить UI
+            mainApp.style.display = 'none';
+            showScreen('login');
+        }
+
+        // --- ЛОГИКА ВХОДА ---
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
             loginErrorMsg.style.display = 'none';
+
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            const user = storedUsers.find(u => u.email === email && decryptPassword(u.password) === password);
-            if (user) {
-                currentActiveUser = user;
-                loginScreen.style.display = 'none';
-                mainApp.style.display = 'flex';
-                document.body.style.backgroundColor = 'var(--bg-med)';
-                currentUsername.textContent = user.username;
-                loadContent('friends-home'); 
+
+            const user = findUserByEmail(email);
+
+            if (user && decryptPassword(user.password) === password) {
+                loginUser(user); // Вызываем функцию логина с токенами
             } else {
                 loginErrorMsg.style.display = 'block';
             }
         });
-
+        
+        // --- ЛОГИКА РЕГИСТРАЦИИ ---
         registerForm.addEventListener('submit', function(event) {
             event.preventDefault();
             registerErrorMsg.style.display = 'none';
             registerSuccessMsg.style.display = 'none';
+
             const email = document.getElementById('regEmail').value.trim();
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value.trim();
+
             if (!email || !username || !password) {
                 registerErrorMsg.textContent = 'Пожалуйста, заполните все поля.';
                 registerErrorMsg.style.display = 'block';
                 return;
             }
-            let storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            if (storedUsers.some(u => u.email === email)) {
+
+            if (findUserByEmail(email)) {
                 registerErrorMsg.textContent = 'Пользователь с таким email уже существует.';
                 registerErrorMsg.style.display = 'block';
                 return;
             }
+
             const newUser = {
                 email: email,
                 username: username,
                 password: encryptPassword(password), 
+                token: null, // Токен будет создан при первом входе
                 id: Date.now().toString() 
             };
-            storedUsers.push(newUser);
-            localStorage.setItem('users', JSON.stringify(storedUsers));
+            
+            saveUser(newUser);
+
             registerSuccessMsg.style.display = 'block';
             registerForm.reset(); 
             setTimeout(() => { showScreen('login'); }, 1500);
         });
 
+        // --- ОБРАБОТЧИК ВЫХОДА ---
+        logoutButton.addEventListener('click', logoutUser);
+
+
+        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ АУТЕНТИФИКАЦИИ ---
         showRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showScreen('register'); });
         showLoginLink.addEventListener('click', (e) => { e.preventDefault(); showScreen('login'); });
 
@@ -394,6 +447,7 @@
             loginScreen.style.display = 'none';
             registerScreen.style.display = 'none';
             mainApp.style.display = 'none';
+
             if (screenName === 'login') {
                 loginScreen.style.display = 'block';
                 loginErrorMsg.style.display = 'none';
@@ -406,6 +460,29 @@
             }
         }
 
+        // --- ИНИЦИАЛИЗАЦИЯ (ПРОВЕРКА ТОКЕНА СЕССИИ) ---
+        function checkSessionToken() {
+            const token = localStorage.getItem(USER_TOKEN_KEY);
+            if (token) {
+                const user = findUserByToken(token);
+                if (user) {
+                    // Токен действителен и сессия долгая - сразу входим!
+                    loginUser(user); 
+                    return;
+                } else {
+                    // Токен недействителен (пользователь удален, например)
+                    localStorage.removeItem(USER_TOKEN_KEY);
+                }
+            }
+            // Если токена нет или он недействителен, показываем экран входа
+            showScreen('login');
+        }
+
+        // --- ВЫЗОВ ИНИЦИАЛИЗАЦИИ ---
+        checkSessionToken(); 
+
+
+        // --- МАКЕТЫ КОНТЕНТА и ОБРАБОТЧИКИ (без изменений) ---
         function loadContent(key) {
             const data = contentData[key];
             chatHeaderContent.innerHTML = `<i class="${data.icon}" style="margin-right: 8px; color: ${key === 'friends-home' ? 'var(--text-primary)' : 'var(--text-secondary)'};"></i>${data.title}`;
