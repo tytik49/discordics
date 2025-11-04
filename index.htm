@@ -258,7 +258,7 @@
         }
 
         function encryptPassword(password) { return btoa(password); }
-        function decryptPassword(encodedPassword) { return atob(encodedPassword); }
+        function decryptPassword(encodedPassword) { return atoa(encodedPassword); }
 
         function getAllUsers() {
             return JSON.parse(localStorage.getItem('users')) || [];
@@ -268,19 +268,21 @@
             return getAllUsers().find(u => u.email === email);
         }
 
+        // --- ФИНАЛЬНАЯ, НАДЕЖНАЯ ФУНКЦИЯ ПОИСКА ДРУГА ---
         function findUserByTag(tag) {
-            // Ожидаемый формат: Username#XXXX
+            // Убеждаемся, что тег содержит разделитель
             const parts = tag.split('#');
             if (parts.length !== 2) return null;
 
-            // 1. Приводим имя пользователя к нижнему регистру для нечувствительного поиска
+            // 1. Приводим имя пользователя к нижнему регистру и обрезаем пробелы
             const targetUsername = parts[0].toLowerCase().trim(); 
+            // 2. Форматируем дискриминатор и обрезаем пробелы
             const targetDiscriminatorNumber = '#' + parts[1].trim(); 
             
-            // Проверка формата дискриминатора
-            if (!targetUsername || parts[1].trim().length !== 4) return null;
+            // Проверка формата дискриминатора: 4 цифры
+            if (!targetUsername || parts[1].trim().length !== 4 || isNaN(parseInt(parts[1].trim()))) return null;
 
-            // 2. Ищем строгое совпадение по дискриминатору И нестрогое по имени
+            // 3. Ищем, сравнивая имена в нижнем регистре и дискриминатор точно
             return getAllUsers().find(u => 
                 u.username.toLowerCase() === targetUsername && 
                 u.discriminator === targetDiscriminatorNumber
@@ -313,6 +315,7 @@
             document.body.style.backgroundColor = 'var(--bg-med)';
             
             currentUsernameEl.textContent = user.username;
+            // Здесь отображаем дискриминатор, который СГЕНЕРИРОВАЛА СИСТЕМА
             currentUserDiscriminatorEl.textContent = user.discriminator || '#0000'; 
             
             loadContent('friends-home');
@@ -351,18 +354,10 @@
                 return;
             }
 
-            // Проверка формата тега
-            if (!friendTag.trim() || friendTag.indexOf('#') === -1 || friendTag.split('#').length !== 2 || friendTag.split('#')[1].trim().length !== 4) {
-                msgEl.textContent = 'Пожалуйста, введите полный тег друга в формате Имя#XXXX.';
-                msgEl.className = 'add-friend-message message-error';
-                msgEl.style.display = 'block';
-                return;
-            }
-
             const friend = findUserByTag(friendTag); 
 
             if (!friend) {
-                msgEl.textContent = `Пользователь с тегом "${friendTag}" не найден.`;
+                msgEl.textContent = `Пользователь с тегом "${friendTag}" не найден. Убедитесь, что дискриминатор верен.`;
                 msgEl.className = 'add-friend-message message-error';
                 msgEl.style.display = 'block';
                 return;
@@ -432,7 +427,7 @@
             let friendsListHTML = '';
             
             if (friends.length === 0) {
-                friendsListHTML = `<p style="color: var(--text-secondary); font-size: 14px; margin-top: 15px; padding: 0 10px;">Начните добавлять друзей с помощью полного тега (Имя#XXXX).</p>`;
+                friendsListHTML = `<p style="color: var(--text-secondary); font-size: 14px; margin-top: 15px; padding: 0 10px;">Начните добавлять друзей с помощью его полного тега (Имя#XXXX).</p>`;
             } else {
                 friendsListHTML = friends.map(friend => `
                     <div class="friends-list-item" data-friend-id="${friend.id}">
@@ -566,13 +561,17 @@
                 token: null,
                 id: Date.now().toString(),
                 friends: [],
-                discriminator: generateDiscriminator() 
+                discriminator: generateDiscriminator() // Генерируем дискриминатор
             };
             
             saveUser(newUser);
+            
+            // Показываем пользователю его новый полный тег
+            registerSuccessMsg.innerHTML = `Аккаунт создан! Ваш тег: <strong>${newUser.username}${newUser.discriminator}</strong>`;
             registerSuccessMsg.style.display = 'block';
+            
             registerForm.reset(); 
-            setTimeout(() => { showScreen('login'); }, 1500);
+            setTimeout(() => { showScreen('login'); }, 3000); // Даем время прочитать тег
         });
 
         loginForm.addEventListener('submit', function(event) {
