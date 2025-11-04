@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Clone: Чистый UI</title>
+    <title>Discord Clone: Анимации</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -54,13 +54,15 @@
         .auth-container input {
             width: 100%; padding: 10px; background-color: var(--bg-dark); 
             border: 1px solid #202225; border-radius: 3px; color: var(--text-primary); 
-            font-size: 16px; transition: border-color 0.2s;
+            font-size: 16px; 
+            transition: border-color 0.2s; /* Анимация: Плавная смена рамки */
         }
         .auth-container input:focus { border-color: var(--violet-brand); outline: none; }
         .auth-container button {
             width: 100%; padding: 10px; margin-top: 20px; background-color: var(--violet-brand);
             border: none; border-radius: 3px; color: var(--text-primary); font-weight: 600;
             cursor: pointer;
+            transition: background-color 0.2s; /* Анимация: Плавная смена фона */
         }
         .auth-container button:hover { background-color: #4048c1; } 
         .auth-container .error-message { color: var(--unread-badge); margin-top: 15px; font-size: 14px; display: none; }
@@ -76,18 +78,29 @@
         
         /* 2.1. Панель Серверов */
         .servers-panel { width: 72px; background-color: #1E1F22; padding: 10px 0; flex-shrink: 0; overflow-y: auto; }
+        
+        /* Анимация: Общие стили для иконок серверов */
         .server-icon { 
-            width: 50px; height: 50px; background-color: #36393F; border-radius: 50%; 
+            width: 50px; height: 50px; background-color: #36393F; 
             margin: 8px auto; display: flex; align-items: center; justify-content: center; 
             color: var(--text-primary); font-size: 1.5em; cursor: pointer; position: relative;
+            
+            /* Плавные переходы для формы и цвета */
+            transition: border-radius 0.25s ease-out, background-color 0.25s ease-out; 
+            border-radius: 50%; /* Базовая форма - круг */
         }
-        /* Иконка Discord */
+
+        /* Иконка Discord (Друзья) - всегда круг, но имеет hover-эффект */
         #friendsServerIcon {
             background-color: var(--violet-brand);
             border-radius: 50%; 
             font-size: 24px;
         }
-        #friendsServerIcon:hover { background-color: var(--violet-brand); border-radius: 50%; } 
+        #friendsServerIcon:hover { 
+            background-color: var(--violet-brand); 
+            border-radius: 50%; /* Оставляем круг */
+            transform: scale(1.05); /* Легкое увеличение */
+        } 
         
         /* Кнопка добавления сервера */
         .server-icon.add-server {
@@ -96,8 +109,9 @@
             font-size: 1.5em;
         }
         .server-icon.add-server:hover {
-            background-color: var(--status-online); /* Зеленый при наведении, как в Discord */
+            background-color: var(--status-online); /* Зеленый при наведении */
             border-radius: 50%;
+            transform: rotate(90deg); /* Анимация: Легкий поворот */
         }
 
         .server-icon .badge {
@@ -114,24 +128,32 @@
             height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; 
             border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
         }
-        /* ПОЛЕ ПОИСКА: Убран box-shadow */
         .channel-header input {
              background: var(--bg-dark); border: none; color: var(--text-primary); 
              padding: 5px 10px; border-radius: 4px; width: 100%;
-             /* Удалена box-shadow */
         }
 
         .channel-list { flex-grow: 1; padding: 8px; overflow-y: auto; }
         
+        /* Анимация: Элементы навигации/списка */
         .nav-item {
             display: flex; align-items: center; height: 42px; padding: 0 8px; 
             border-radius: 4px; cursor: pointer; color: var(--text-secondary); 
             margin: 0 6px 2px 6px; font-size: 16px; font-weight: 500;
+            
+            transition: background-color 0.15s, color 0.15s, transform 0.05s; /* Плавный ховер */
         }
-        .nav-item:hover { color: var(--text-primary); background-color: var(--violet-active-bg); }
+        .nav-item:hover { 
+            color: var(--text-primary); 
+            background-color: var(--violet-active-bg); 
+        }
+        .nav-item:active {
+            transform: scale(0.98); /* Анимация: Имитация нажатия */
+        }
         .nav-item.active-tab { 
             color: var(--text-primary); 
             background-color: var(--violet-active-bg); 
+            font-weight: 600; /* Выделение активного элемента */
         }
         .nav-item i { margin-right: 12px; font-size: 1.2em; width: 20px; text-align: center; }
 
@@ -145,6 +167,18 @@
             height: 54px; background-color: #23272A; padding: 0 8px; 
             display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
+        /* Анимация: Иконки управления */
+        .user-settings .controls i {
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            transition: color 0.15s, background-color 0.15s;
+        }
+        .user-settings .controls i:hover {
+            color: var(--text-primary);
+            background-color: var(--violet-active-bg);
+        }
 
         /* 3. Панель Чата (Контент) */
         .chat-panel { flex-grow: 1; background-color: var(--bg-med); display: flex; flex-direction: column; }
@@ -155,7 +189,15 @@
         .friends-content h2 { font-size: 20px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid #40444B; padding-bottom: 15px; margin-bottom: 15px; }
 
         .message-input-area { padding: 20px 16px; flex-shrink: 0; }
-        .message-input-area input { width: 100%; height: 44px; border-radius: 8px; padding: 0 16px; background-color: var(--bg-light); color: var(--text-primary); border: none; font-size: 1em; }
+        .message-input-area input { 
+            width: 100%; height: 44px; border-radius: 8px; padding: 0 16px; 
+            background-color: var(--bg-light); color: var(--text-primary); border: none; 
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+        .message-input-area input:focus {
+            background-color: #40444B; /* Небольшое затемнение при фокусе */
+        }
     </style>
 </head>
 <body>
@@ -264,21 +306,17 @@
     </div>
 
     <script>
-        // --- Элементы UI ---
+        // --- Логика JS (без изменений) ---
         const loginScreen = document.getElementById('loginScreen');
         const registerScreen = document.getElementById('registerScreen');
         const mainApp = document.getElementById('mainApp');
-
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
-        
         const loginErrorMsg = document.getElementById('loginErrorMsg');
         const registerErrorMsg = document.getElementById('registerErrorMsg');
         const registerSuccessMsg = document.getElementById('registerSuccessMsg');
-
         const showRegisterLink = document.getElementById('showRegister');
         const showLoginLink = document.getElementById('showLogin');
-
         const channelList = document.getElementById('channelList');
         const chatHeaderContent = document.getElementById('chatHeaderContent');
         const messageList = document.getElementById('messageList');
@@ -289,7 +327,6 @@
 
         let currentActiveUser = null; 
 
-        // --- ДАННЫЕ (ИМИТАЦИЯ) ---
         const contentData = {
             'friends-home': { title: 'Друзья', icon: 'fas fa-user-friends', content: getFriendsHomeContent(), hasInput: false },
             'nitro': { title: 'Nitro', icon: 'fas fa-crown', content: getNitroContent(), hasInput: false },
@@ -297,26 +334,16 @@
             'tasks': { title: 'Задания', icon: 'fas fa-cog', content: getTasksContent(), hasInput: false },
         };
 
-        // --- ЛОГИКА ШИФРОВАНИЯ/ДЕШИФРОВАНИЯ (Base64) ---
-        function encryptPassword(password) {
-            return btoa(password); 
-        }
+        function encryptPassword(password) { return btoa(password); }
+        function decryptPassword(encodedPassword) { return atob(encodedPassword); }
 
-        function decryptPassword(encodedPassword) {
-            return atob(encodedPassword); 
-        }
-
-        // --- ЛОГИКА ВХОДА ---
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
             loginErrorMsg.style.display = 'none';
-
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
-
             const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
             const user = storedUsers.find(u => u.email === email && decryptPassword(u.password) === password);
-
             if (user) {
                 currentActiveUser = user;
                 loginScreen.style.display = 'none';
@@ -329,30 +356,24 @@
             }
         });
 
-        // --- ЛОГИКА РЕГИСТРАЦИИ ---
         registerForm.addEventListener('submit', function(event) {
             event.preventDefault();
             registerErrorMsg.style.display = 'none';
             registerSuccessMsg.style.display = 'none';
-
             const email = document.getElementById('regEmail').value.trim();
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value.trim();
-
             if (!email || !username || !password) {
                 registerErrorMsg.textContent = 'Пожалуйста, заполните все поля.';
                 registerErrorMsg.style.display = 'block';
                 return;
             }
-
             let storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-
             if (storedUsers.some(u => u.email === email)) {
                 registerErrorMsg.textContent = 'Пользователь с таким email уже существует.';
                 registerErrorMsg.style.display = 'block';
                 return;
             }
-
             const newUser = {
                 email: email,
                 username: username,
@@ -361,30 +382,18 @@
             };
             storedUsers.push(newUser);
             localStorage.setItem('users', JSON.stringify(storedUsers));
-
             registerSuccessMsg.style.display = 'block';
             registerForm.reset(); 
-            setTimeout(() => {
-                showScreen('login'); 
-            }, 1500);
+            setTimeout(() => { showScreen('login'); }, 1500);
         });
 
-        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ АУТЕНТИФИКАЦИИ ---
-        showRegisterLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showScreen('register');
-        });
-
-        showLoginLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showScreen('login');
-        });
+        showRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showScreen('register'); });
+        showLoginLink.addEventListener('click', (e) => { e.preventDefault(); showScreen('login'); });
 
         function showScreen(screenName) {
             loginScreen.style.display = 'none';
             registerScreen.style.display = 'none';
             mainApp.style.display = 'none';
-
             if (screenName === 'login') {
                 loginScreen.style.display = 'block';
                 loginErrorMsg.style.display = 'none';
@@ -397,50 +406,36 @@
             }
         }
 
-        // --- ЛОГИКА ЗАГРУЗКИ КОНТЕНТА (Навигация) ---
         function loadContent(key) {
             const data = contentData[key];
-            
             chatHeaderContent.innerHTML = `<i class="${data.icon}" style="margin-right: 8px; color: ${key === 'friends-home' ? 'var(--text-primary)' : 'var(--text-secondary)'};"></i>${data.title}`;
             messageList.innerHTML = data.content;
             chatForm.style.display = data.hasInput ? 'flex' : 'none';
             membersPanel.style.width = key.startsWith('channel') ? '280px' : '0';
         }
         
-        // --- ОБРАБОТЧИК КЛИКОВ (Навигация) ---
         channelList.addEventListener('click', (e) => {
             const item = e.target.closest('.nav-item');
             if (!item) return;
-            
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-tab'));
             item.classList.add('active-tab');
-            
             const targetKey = item.getAttribute('data-target');
-            if (targetKey) {
-                loadContent(targetKey);
-            }
+            if (targetKey) { loadContent(targetKey); }
         });
 
-        // --- ОБРАБОТЧИК КЛИКОВ (Серверы - теперь только Discord и +) ---
         document.querySelector('.servers-panel').addEventListener('click', (e) => {
             const icon = e.target.closest('.server-icon');
             if (!icon) return;
-            
             document.querySelectorAll('.server-icon').forEach(i => i.classList.remove('active'));
             icon.classList.add('active');
-            
             if (icon.id === 'friendsServerIcon') {
                 document.getElementById('channelHeader').innerHTML = '<input type="text" placeholder="Найти или начать беседу">';
                 channelList.innerHTML = getFriendsNav();
                 loadContent('friends-home');
             } 
-            // Здесь можно добавить логику для кнопки '+' если она будет открывать модальное окно добавления сервера
         });
 
-        // --- МАКЕТЫ КОНТЕНТА ---
-        function getFriendsHomeContent() {
-            return `<div class="friends-content"><h2 style="color: var(--text-secondary);">ДРУЗЬЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Никто не онлайн. :( Начните добавлять друзей!</p></div>`;
-        }
+        function getFriendsHomeContent() { return `<div class="friends-content"><h2 style="color: var(--text-secondary);">ДРУЗЬЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Никто не онлайн. :( Начните добавлять друзей!</p></div>`; }
         function getNitroContent() { return `<div class="friends-content"><h2>DISCORD NITRO</h2><p style="color: var(--text-secondary); font-size: 14px;">Покупайте Nitro и поддержите нас!</p></div>`; }
         function getStoreContent() { return `<div class="friends-content"><h2>МАГАЗИН</h2><p style="color: var(--text-secondary); font-size: 14px;">Эксклюзивные товары.</p></div>`; }
         function getTasksContent() { return `<div class="friends-content"><h2>ЗАДАНИЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Нет активных заданий.</p></div>`; }
@@ -459,7 +454,6 @@
                 <div class="nav-item" data-target="tasks">
                     <i class="fas fa-cog"></i> Задания
                 </div>
-                
                 <div class="dm-category">
                     Личные сообщения <i class="fas fa-plus" style="font-size: 10px; cursor: pointer;"></i>
                 </div>
