@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Clone: Регистрация и Вход</title>
+    <title>Discord Clone: Чистый UI</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -62,7 +62,7 @@
             border: none; border-radius: 3px; color: var(--text-primary); font-weight: 600;
             cursor: pointer;
         }
-        .auth-container button:hover { background-color: #4048c1; } /* Чуть темнее */
+        .auth-container button:hover { background-color: #4048c1; } 
         .auth-container .error-message { color: var(--unread-badge); margin-top: 15px; font-size: 14px; display: none; }
         .auth-container .link-text { margin-top: 15px; font-size: 12px; color: var(--text-secondary); }
         .auth-container .link-text a { color: var(--violet-brand); text-decoration: none; }
@@ -81,17 +81,25 @@
             margin: 8px auto; display: flex; align-items: center; justify-content: center; 
             color: var(--text-primary); font-size: 1.5em; cursor: pointer; position: relative;
         }
-        /* Иконка Discord (как на скриншоте) */
+        /* Иконка Discord */
         #friendsServerIcon {
             background-color: var(--violet-brand);
-            border-radius: 50%; /* Всегда круглая */
+            border-radius: 50%; 
             font-size: 24px;
         }
-        #friendsServerIcon:hover { background-color: var(--violet-brand); border-radius: 50%; } /* Не меняет форму */
-
-        .server-icon:not(#friendsServerIcon):hover { background-color: var(--violet-brand); border-radius: 30%; }
-        .server-icon:not(#friendsServerIcon).active { border-radius: 30%; background-color: var(--violet-brand); }
+        #friendsServerIcon:hover { background-color: var(--violet-brand); border-radius: 50%; } 
         
+        /* Кнопка добавления сервера */
+        .server-icon.add-server {
+            background-color: #36393F;
+            border-radius: 50%;
+            font-size: 1.5em;
+        }
+        .server-icon.add-server:hover {
+            background-color: var(--status-online); /* Зеленый при наведении, как в Discord */
+            border-radius: 50%;
+        }
+
         .server-icon .badge {
             position: absolute; top: -5px; right: -5px; background: var(--unread-badge);
             color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; 
@@ -106,6 +114,13 @@
             height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; 
             border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
         }
+        /* ПОЛЕ ПОИСКА: Убран box-shadow */
+        .channel-header input {
+             background: var(--bg-dark); border: none; color: var(--text-primary); 
+             padding: 5px 10px; border-radius: 4px; width: 100%;
+             /* Удалена box-shadow */
+        }
+
         .channel-list { flex-grow: 1; padding: 8px; overflow-y: auto; }
         
         .nav-item {
@@ -189,9 +204,6 @@
     <div class="app-container" id="mainApp">
         <div class="servers-panel">
             <div class="server-icon active" id="friendsServerIcon"><i class="fab fa-discord"></i></div>
-            <div class="server-icon" data-server="community">💜</div>
-            <div class="server-icon" data-server="code"><i class="fas fa-code"></i><span class="badge">2</span></div>
-            <div class="server-icon" data-server="game"><i class="fas fa-gamepad"></i><span class="badge">20</span></div>
             <div class="server-icon add-server"><i class="fas fa-plus"></i></div>
         </div>
 
@@ -275,7 +287,7 @@
         const currentUserAvatar = document.getElementById('currentUserAvatar');
         const currentUsername = document.getElementById('currentUsername');
 
-        let currentActiveUser = null; // Для отслеживания текущего вошедшего пользователя
+        let currentActiveUser = null; 
 
         // --- ДАННЫЕ (ИМИТАЦИЯ) ---
         const contentData = {
@@ -283,17 +295,15 @@
             'nitro': { title: 'Nitro', icon: 'fas fa-crown', content: getNitroContent(), hasInput: false },
             'store': { title: 'Магазин', icon: 'fas fa-store', content: getStoreContent(), hasInput: false },
             'tasks': { title: 'Задания', icon: 'fas fa-cog', content: getTasksContent(), hasInput: false },
-            'channel-общие': { title: '# общие', icon: 'fas fa-hashtag', content: getChannelContent('общие'), hasInput: true },
-            'channel-мемы': { title: '# мемы', icon: 'fas fa-hashtag', content: getChannelContent('мемы'), hasInput: true },
         };
 
         // --- ЛОГИКА ШИФРОВАНИЯ/ДЕШИФРОВАНИЯ (Base64) ---
         function encryptPassword(password) {
-            return btoa(password); // Base64 кодирование
+            return btoa(password); 
         }
 
         function decryptPassword(encodedPassword) {
-            return atob(encodedPassword); // Base64 декодирование
+            return atob(encodedPassword); 
         }
 
         // --- ЛОГИКА ВХОДА ---
@@ -313,7 +323,7 @@
                 mainApp.style.display = 'flex';
                 document.body.style.backgroundColor = 'var(--bg-med)';
                 currentUsername.textContent = user.username;
-                loadContent('friends-home'); // Всегда начинаем с экрана Друзей
+                loadContent('friends-home'); 
             } else {
                 loginErrorMsg.style.display = 'block';
             }
@@ -346,16 +356,16 @@
             const newUser = {
                 email: email,
                 username: username,
-                password: encryptPassword(password), // Шифруем пароль
-                id: Date.now().toString() // Простой ID
+                password: encryptPassword(password), 
+                id: Date.now().toString() 
             };
             storedUsers.push(newUser);
             localStorage.setItem('users', JSON.stringify(storedUsers));
 
             registerSuccessMsg.style.display = 'block';
-            registerForm.reset(); // Очистить форму
+            registerForm.reset(); 
             setTimeout(() => {
-                showScreen('login'); // Вернуть на экран входа
+                showScreen('login'); 
             }, 1500);
         });
 
@@ -387,7 +397,7 @@
             }
         }
 
-        // --- ЛОГИКА ЗАГРУЗКИ КОНТЕНТА (Каналы/Друзья) ---
+        // --- ЛОГИКА ЗАГРУЗКИ КОНТЕНТА (Навигация) ---
         function loadContent(key) {
             const data = contentData[key];
             
@@ -397,9 +407,9 @@
             membersPanel.style.width = key.startsWith('channel') ? '280px' : '0';
         }
         
-        // --- ОБРАБОТЧИК КЛИКОВ (Навигация/DM/Серверы) ---
+        // --- ОБРАБОТЧИК КЛИКОВ (Навигация) ---
         channelList.addEventListener('click', (e) => {
-            const item = e.target.closest('.nav-item'); // Убрал .dm-item
+            const item = e.target.closest('.nav-item');
             if (!item) return;
             
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-tab'));
@@ -411,6 +421,7 @@
             }
         });
 
+        // --- ОБРАБОТЧИК КЛИКОВ (Серверы - теперь только Discord и +) ---
         document.querySelector('.servers-panel').addEventListener('click', (e) => {
             const icon = e.target.closest('.server-icon');
             if (!icon) return;
@@ -422,22 +433,8 @@
                 document.getElementById('channelHeader').innerHTML = '<input type="text" placeholder="Найти или начать беседу">';
                 channelList.innerHTML = getFriendsNav();
                 loadContent('friends-home');
-            } else if (icon.getAttribute('data-server') === 'community') {
-                document.getElementById('channelHeader').innerHTML = '<span style="padding: 0 10px;">Фиолетовое Сообщество</span>';
-                channelList.innerHTML = getCommunityChannels();
-                loadContent('channel-общие');
-            }
-             // Для других серверов можно добавить свою логику
-             else if (icon.getAttribute('data-server') === 'code') {
-                document.getElementById('channelHeader').innerHTML = '<span style="padding: 0 10px;">Проект Код</span>';
-                channelList.innerHTML = getCodeChannels();
-                loadContent('channel-общие'); // Показываем общий канал по умолчанию
-            }
-            else if (icon.getAttribute('data-server') === 'game') {
-                document.getElementById('channelHeader').innerHTML = '<span style="padding: 0 10px;">Игровой Сервер</span>';
-                channelList.innerHTML = getGameChannels();
-                loadContent('channel-общие'); // Показываем общий канал по умолчанию
-            }
+            } 
+            // Здесь можно добавить логику для кнопки '+' если она будет открывать модальное окно добавления сервера
         });
 
         // --- МАКЕТЫ КОНТЕНТА ---
@@ -447,7 +444,6 @@
         function getNitroContent() { return `<div class="friends-content"><h2>DISCORD NITRO</h2><p style="color: var(--text-secondary); font-size: 14px;">Покупайте Nitro и поддержите нас!</p></div>`; }
         function getStoreContent() { return `<div class="friends-content"><h2>МАГАЗИН</h2><p style="color: var(--text-secondary); font-size: 14px;">Эксклюзивные товары.</p></div>`; }
         function getTasksContent() { return `<div class="friends-content"><h2>ЗАДАНИЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Нет активных заданий.</p></div>`; }
-        function getChannelContent(channel) { return `<div class="friends-content"><h2>КАНАЛ ${channel.toUpperCase()}</h2></div>`; }
         
         function getFriendsNav() {
             return `
@@ -468,42 +464,6 @@
                     Личные сообщения <i class="fas fa-plus" style="font-size: 10px; cursor: pointer;"></i>
                 </div>
                 `;
-        }
-        
-        function getCommunityChannels() {
-            return `
-                <div class="dm-category" style="font-size: 14px; margin-left: 10px;">КАНАЛЫ</div>
-                <div class="nav-item active-tab" data-target="channel-общие">
-                    <i class="fas fa-hashtag"></i> общие
-                </div>
-                <div class="nav-item" data-target="channel-мемы">
-                    <i class="fas fa-hashtag"></i> мемы
-                </div>
-            `;
-        }
-
-        function getCodeChannels() {
-             return `
-                <div class="dm-category" style="font-size: 14px; margin-left: 10px;">КАНАЛЫ КОДА</div>
-                <div class="nav-item active-tab" data-target="channel-общие">
-                    <i class="fas fa-hashtag"></i> code-general
-                </div>
-                <div class="nav-item" data-target="channel-bugs">
-                    <i class="fas fa-bug"></i> bugs
-                </div>
-            `;
-        }
-
-        function getGameChannels() {
-             return `
-                <div class="dm-category" style="font-size: 14px; margin-left: 10px;">ИГРОВЫЕ КАНАЛЫ</div>
-                <div class="nav-item active-tab" data-target="channel-общие">
-                    <i class="fas fa-hashtag"></i> lobby
-                </div>
-                <div class="nav-item" data-target="channel-voice-game">
-                    <i class="fas fa-headset"></i> Gaming Voice
-                </div>
-            `;
         }
     </script>
 </body>
