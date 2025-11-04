@@ -302,7 +302,14 @@
         function decryptPassword(encodedPassword) { return atob(encodedPassword); }
 
         function getAllUsers() {
-            return JSON.parse(localStorage.getItem('users')) || [];
+            // Возвращает массив пользователей
+            const usersJson = localStorage.getItem('users');
+            try {
+                return JSON.parse(usersJson) || [];
+            } catch (e) {
+                console.error("Ошибка парсинга users из Local Storage:", e);
+                return [];
+            }
         }
 
         function findUserById(id) {
@@ -313,20 +320,33 @@
             return getAllUsers().find(u => u.email === email);
         }
 
-        // Усиленный поиск по тегу
+        // *** УСИЛЕННАЯ ФУНКЦИЯ ПОИСКА: Справляется с лишними пробелами ***
         function findUserByTag(tag) {
-            const parts = tag.split('#');
-            if (parts.length !== 2) return null;
+            // 1. Убираем лишние пробелы в начале и конце
+            const cleanTag = tag.trim();
+            
+            // 2. Ищем индекс символа #
+            const hashIndex = cleanTag.lastIndexOf('#');
 
-            const targetUsername = parts[0].toLowerCase().trim(); 
-            const discriminatorPart = parts[1].trim(); 
+            if (hashIndex === -1 || hashIndex === 0 || hashIndex === cleanTag.length - 1) {
+                return null; 
+            }
+
+            // 3. Извлекаем имя, убирая все пробелы перед #
+            const usernamePart = cleanTag.substring(0, hashIndex).trim(); 
+            
+            // 4. Извлекаем дискриминатор
+            const discriminatorPart = cleanTag.substring(hashIndex + 1).trim(); 
             const targetDiscriminatorNumber = '#' + discriminatorPart;
             
-            // Проверка формата: 4 цифры
-            if (!targetUsername || discriminatorPart.length !== 4 || isNaN(parseInt(discriminatorPart))) return null;
+            // 5. Проверка формата: 4 цифры
+            if (discriminatorPart.length !== 4 || isNaN(parseInt(discriminatorPart))) return null;
 
-            return getAllUsers().find(u => 
-                u.username.toLowerCase() === targetUsername && 
+            // 6. Ищем в базе данных
+            const allUsers = getAllUsers();
+            
+            return allUsers.find(u => 
+                u.username.toLowerCase() === usernamePart.toLowerCase() && 
                 u.discriminator === targetDiscriminatorNumber
             );
         }
@@ -470,7 +490,27 @@
             const ids = [currentActiveUser.id, friendId].sort();
             return ids.join('_');
         }
+        
+        // *** НОВАЯ ФУНКЦИЯ ДЛЯ МГНОВЕННОГО ДОБАВЛЕНИЯ СООБЩЕНИЯ ***
+        function appendMessageToChat(message) {
+            const sender = findUserById(message.senderId);
+            if (!sender) return;
+            
+            const messageHTML = `
+                <div class="chat-message">
+                    <div class="chat-message-header">
+                        <strong style="color: ${message.senderId === currentActiveUser.id ? 'var(--status-online)' : 'var(--violet-brand)'};">${sender.username}</strong>
+                        <span>${new Date(message.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <p>${message.content}</p>
+                </div>
+            `;
+            
+            messageList.insertAdjacentHTML('beforeend', messageHTML);
+            messageList.scrollTop = messageList.scrollHeight;
+        }
 
+        // *** ОБНОВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ ЧАТА ***
         function loadDMChat(friendId) {
             const friend = findUserById(friendId);
             if (!friend) return;
@@ -497,7 +537,7 @@
             `).join('');
 
             // Активация поля ввода
-            chatForm.style.display = 'flex';
+            chatForm.style.display = 'flex'; 
             const chatInput = document.getElementById('chatInput');
             chatInput.placeholder = `Написать @${friend.username}`;
             chatInput.focus();
@@ -509,6 +549,7 @@
             updateDMListActiveState(friendId);
         }
 
+        // *** ОБНОВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ СООБЩЕНИЯ ***
         function sendMessage(content) {
             if (!content || !activeDM) return;
             
@@ -527,8 +568,8 @@
             messagesDB[dmKey].push(message);
             saveMessages();
             
-            // Перезагрузка чата для отображения нового сообщения
-            loadDMChat(activeDM); 
+            // Мгновенное отображение нового сообщения
+            appendMessageToChat(message); 
         }
 
 
@@ -666,7 +707,11 @@
                 const friendsListContainer = document.getElementById('friendsListContainer');
 
                 if (addFriendForm) {
-                    addFriendForm.addEventListener('submit', function(e) {
+                    // Удаляем старый обработчик, если он есть, чтобы избежать дублирования
+                    addFriendForm.replaceWith(addFriendForm.cloneNode(true));
+                    const newAddFriendForm = document.getElementById('addFriendForm');
+
+                    newAddFriendForm.addEventListener('submit', function(e) {
                         e.preventDefault();
                         const tagInput = document.getElementById('friendTagInput');
                         addFriendLogic(tagInput.value);
@@ -675,7 +720,11 @@
                 }
                 
                 if (friendsListContainer) {
-                    friendsListContainer.addEventListener('click', function(e) {
+                    // Удаляем старый обработчик, если он есть
+                    friendsListContainer.replaceWith(friendsListContainer.cloneNode(true));
+                    const newFriendsListContainer = document.getElementById('friendsListContainer');
+
+                    newFriendsListContainer.addEventListener('click', function(e) {
                         const removeBtn = e.target.closest('.remove-friend-btn');
                         const startDmBtn = e.target.closest('.friend-info') || e.target.closest('.start-dm-btn');
 
@@ -695,7 +744,7 @@
         // --- ОБРАБОТЧИКИ АУТЕНТИФИКАЦИИ И ИНИЦИАЛИЗАЦИЯ ---
 
         registerForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // ГАРАНТИЯ, что форма не перезагрузится
+            event.preventDefault(); 
             registerErrorMsg.style.display = 'none';
             registerSuccessMsg.style.display = 'none';
             const email = document.getElementById('regEmail').value.trim();
@@ -733,7 +782,7 @@
         });
 
         loginForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // ГАРАНТИЯ, что форма не перезагрузится
+            event.preventDefault(); 
             loginErrorMsg.style.display = 'none';
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
