@@ -92,7 +92,7 @@
             transition: background-color 0.15s;
         }
         .friends-list-item:hover { background-color: var(--violet-active-bg); }
-        .friend-info { display: flex; align-items: center; cursor: pointer; } /* Добавляем курсор для клика */
+        .friend-info { display: flex; align-items: center; cursor: pointer; } 
         .friend-avatar { width: 32px; height: 32px; border-radius: 50%; background-color: var(--violet-brand); margin-right: 10px; position: relative; }
         .friend-status { width: 10px; height: 10px; border-radius: 50%; border: 3px solid var(--bg-med); position: absolute; bottom: -2px; right: -2px; }
         .status-online { background-color: var(--status-online); }
@@ -127,6 +127,34 @@
             border: none;
             border-radius: 8px;
             color: var(--text-primary);
+        }
+
+        /* Сообщение в чате */
+        .chat-message {
+            margin-bottom: 15px; 
+            padding: 5px 0;
+            border-left: 3px solid transparent;
+            transition: background-color 0.1s;
+        }
+        .chat-message:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        .chat-message-header {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .chat-message-header strong {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        .chat-message-header span {
+            color: var(--text-secondary); 
+            font-size: 10px;
+            font-weight: 400;
+        }
+        .chat-message p {
+            font-size: 15px;
+            margin-left: 4px;
         }
     </style>
 </head>
@@ -208,11 +236,11 @@
             <div class="chat-header" id="chatHeaderContent">
                 <i class="fas fa-user-friends" style="margin-right: 8px;"></i>Друзья
             </div>
-            <div class="message-list" id="messageList" style="padding: 0;">
+            <div class="message-list" id="messageList" style="padding: 16px;">
                 </div>
             
             <form id="chatForm" class="message-input-area" style="display: none;">
-                <input type="text" id="chatInput" placeholder="Начать личное сообщение">
+                <input type="text" id="chatInput" placeholder="Начать личное сообщение" autocomplete="off">
             </form>
         </div>
 
@@ -285,14 +313,17 @@
             return getAllUsers().find(u => u.email === email);
         }
 
+        // Усиленный поиск по тегу
         function findUserByTag(tag) {
             const parts = tag.split('#');
             if (parts.length !== 2) return null;
 
             const targetUsername = parts[0].toLowerCase().trim(); 
-            const targetDiscriminatorNumber = '#' + parts[1].trim(); 
+            const discriminatorPart = parts[1].trim(); 
+            const targetDiscriminatorNumber = '#' + discriminatorPart;
             
-            if (!targetUsername || parts[1].trim().length !== 4 || isNaN(parseInt(parts[1].trim()))) return null;
+            // Проверка формата: 4 цифры
+            if (!targetUsername || discriminatorPart.length !== 4 || isNaN(parseInt(discriminatorPart))) return null;
 
             return getAllUsers().find(u => 
                 u.username.toLowerCase() === targetUsername && 
@@ -456,10 +487,12 @@
             // Загрузка сообщений
             const messages = messagesDB[dmKey] || [];
             messageList.innerHTML = messages.map(msg => `
-                <div style="margin-bottom: 15px; font-size: 14px;">
-                    <strong style="color: ${msg.senderId === currentActiveUser.id ? 'var(--status-online)' : 'var(--violet-brand)'};">${findUserById(msg.senderId).username}</strong>
-                    <span style="color: var(--text-secondary); font-size: 10px;"> (${new Date(msg.timestamp).toLocaleTimeString()})</span>
-                    <p style="margin-top: 2px;">${msg.content}</p>
+                <div class="chat-message">
+                    <div class="chat-message-header">
+                        <strong style="color: ${msg.senderId === currentActiveUser.id ? 'var(--status-online)' : 'var(--violet-brand)'};">${findUserById(msg.senderId).username}</strong>
+                        <span>${new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <p>${msg.content}</p>
                 </div>
             `).join('');
 
@@ -516,7 +549,7 @@
         
         function getFriendsNav() {
             return `
-                <div class="nav-item active-tab" data-target="friends-home">
+                <div class="nav-item ${activeDM === null ? 'active-tab' : ''}" data-target="friends-home">
                     <i class="fas fa-user-friends"></i> Друзья
                 </div>
                 <div class="nav-item" data-target="nitro">
@@ -566,7 +599,7 @@
                         <h3>ДОБАВИТЬ В ДРУЗЬЯ</h3>
                         <p>Вы можете добавить друга с помощью его полного тега (например, ${currentActiveUser.username}${currentDisc}).</p>
                         <form id="addFriendForm" class="add-friend-input-group">
-                            <input type="text" id="friendTagInput" placeholder="Введите имя пользователя#дискриминатор">
+                            <input type="text" id="friendTagInput" placeholder="Введите имя пользователя#дискриминатор" autocomplete="off">
                             <button type="submit">Отправить запрос</button>
                         </form>
                         <div id="addFriendMessage" class="add-friend-message"></div>
@@ -599,13 +632,14 @@
         // --- ЛОГИКА ЗАГРУЗКИ КОНТЕНТА И ОБРАБОТЧИКИ ---
         
         function updateDMListActiveState(friendId) {
+            // Снимаем активный класс с вкладок навигации
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-tab'));
+            // Обновляем активный класс DM
             document.querySelectorAll('.dm-item').forEach(i => i.classList.remove('active-dm'));
             const activeItem = document.querySelector(`.dm-item[data-friend-id="${friendId}"]`);
             if (activeItem) {
                 activeItem.classList.add('active-dm');
             }
-            // Снимаем активный класс с вкладок навигации
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-tab'));
         }
 
         function loadContent(key) {
@@ -620,9 +654,14 @@
             }
             
             chatForm.style.display = data.hasInput ? 'flex' : 'none';
-            activeDM = null; // Сбрасываем DM при переходе на вкладку
+            
+            if (key !== 'friends-home') {
+                 activeDM = null; // Сбрасываем DM при переходе на вкладку
+                 document.querySelectorAll('.dm-item').forEach(i => i.classList.remove('active-dm'));
+            }
             
             if (key === 'friends-home') {
+                document.querySelector('.nav-item[data-target="friends-home"]').classList.add('active-tab');
                 const addFriendForm = document.getElementById('addFriendForm');
                 const friendsListContainer = document.getElementById('friendsListContainer');
 
@@ -656,7 +695,7 @@
         // --- ОБРАБОТЧИКИ АУТЕНТИФИКАЦИИ И ИНИЦИАЛИЗАЦИЯ ---
 
         registerForm.addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // ГАРАНТИЯ, что форма не перезагрузится
             registerErrorMsg.style.display = 'none';
             registerSuccessMsg.style.display = 'none';
             const email = document.getElementById('regEmail').value.trim();
@@ -693,9 +732,8 @@
             setTimeout(() => { showScreen('login'); }, 3000); 
         });
 
-        // *** ИСПРАВЛЕНИЕ: Это стандартный обработчик, который должен работать, если кнопка имеет type="submit" ***
         loginForm.addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // ГАРАНТИЯ, что форма не перезагрузится
             loginErrorMsg.style.display = 'none';
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
@@ -725,12 +763,15 @@
             if (screenName === 'login') {
                 loginScreen.style.display = 'block';
                 loginErrorMsg.style.display = 'none';
+                document.body.style.backgroundColor = 'var(--bg-dark)';
             } else if (screenName === 'register') {
                 registerScreen.style.display = 'block';
                 registerErrorMsg.style.display = 'none';
                 registerSuccessMsg.style.display = 'none';
+                document.body.style.backgroundColor = 'var(--bg-dark)';
             } else if (screenName === 'app') {
                 mainApp.style.display = 'flex';
+                document.body.style.backgroundColor = 'var(--bg-med)';
             }
         }
 
