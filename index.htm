@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Clone: Долгая Сессия</title>
+    <title>Discord Clone: Добавление Друзей</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        /* (Стили остаются без изменений, чтобы сохранить внешний вид) */
+        /* CSS Переменные */
         :root {
             --bg-dark: #202225; 
             --bg-med: #2F3136; 
@@ -22,15 +22,17 @@
             --status-online: #43B581;
             --unread-badge: #F23F43; 
             --font-family: 'Montserrat', sans-serif;
+            --user-status-offline: #747f8d; /* Серый */
         }
 
+        /* (Общие стили и стили аутентификации - без изменений) */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: var(--font-family);
         }
-
+        /* ... (Стили аутентификации и основного макета) ... */
         body, html {
             height: 100%;
             overflow: hidden;
@@ -38,7 +40,6 @@
             transition: background-color 0.5s;
         }
 
-        /* --- Общие стили для форм --- */
         .auth-container { 
             width: 480px; padding: 32px; background-color: var(--bg-med); border-radius: 5px; 
             box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.5); text-align: center; position: absolute;
@@ -69,108 +70,38 @@
         .auth-container .link-text { margin-top: 15px; font-size: 12px; color: var(--text-secondary); }
         .auth-container .link-text a { color: var(--violet-brand); text-decoration: none; }
 
-        /* --- 2. СТИЛИ ГЛАВНОГО ЭКРАНА --- */
-        .app-container {
-            display: none; 
-            height: 100vh;
-            color: var(--text-primary);
-        }
-        
-        /* 2.1. Панель Серверов */
+        .app-container { display: none; height: 100vh; color: var(--text-primary); }
         .servers-panel { width: 72px; background-color: #1E1F22; padding: 10px 0; flex-shrink: 0; overflow-y: auto; }
         .server-icon { 
-            width: 50px; height: 50px; background-color: #36393F; 
-            margin: 8px auto; display: flex; align-items: center; justify-content: center; 
+            width: 50px; height: 50px; background-color: #36393F; margin: 8px auto; display: flex; align-items: center; justify-content: center; 
             color: var(--text-primary); font-size: 1.5em; cursor: pointer; position: relative;
-            transition: border-radius 0.25s ease-out, background-color 0.25s ease-out; 
-            border-radius: 50%; 
+            transition: border-radius 0.25s ease-out, background-color 0.25s ease-out; border-radius: 50%; 
         }
-        #friendsServerIcon {
-            background-color: var(--violet-brand);
-            border-radius: 50%; 
-            font-size: 24px;
-        }
-        #friendsServerIcon:hover { 
-            background-color: var(--violet-brand); 
-            border-radius: 50%; 
-            transform: scale(1.05); 
-        } 
-        
-        .server-icon.add-server {
-            background-color: #36393F;
-            border-radius: 50%;
-            font-size: 1.5em;
-        }
-        .server-icon.add-server:hover {
-            background-color: var(--status-online); 
-            border-radius: 50%;
-            transform: rotate(90deg); 
-        }
+        #friendsServerIcon { background-color: var(--violet-brand); border-radius: 50%; font-size: 24px; }
+        #friendsServerIcon:hover { background-color: var(--violet-brand); border-radius: 50%; transform: scale(1.05); } 
+        .server-icon.add-server { background-color: #36393F; border-radius: 50%; font-size: 1.5em; }
+        .server-icon.add-server:hover { background-color: var(--status-online); border-radius: 50%; transform: rotate(90deg); }
 
-        .server-icon .badge {
-            position: absolute; top: -5px; right: -5px; background: var(--unread-badge);
-            color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; 
-            border-radius: 50%; border: 3px solid #1E1F22; min-width: 20px; text-align: center;
-        }
-
-        /* 2.2. Панель Каналов/Друзей */
-        .channels-panel { 
-            width: 240px; background-color: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; 
-        }
-        .channel-header { 
-            height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; 
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
-        }
-        .channel-header input {
-             background: var(--bg-dark); border: none; color: var(--text-primary); 
-             padding: 5px 10px; border-radius: 4px; width: 100%;
-        }
-
+        .channels-panel { width: 240px; background-color: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; }
+        .channel-header { height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+        .channel-header input { background: var(--bg-dark); border: none; color: var(--text-primary); padding: 5px 10px; border-radius: 4px; width: 100%; }
         .channel-list { flex-grow: 1; padding: 8px; overflow-y: auto; }
         
         .nav-item {
-            display: flex; align-items: center; height: 42px; padding: 0 8px; 
-            border-radius: 4px; cursor: pointer; color: var(--text-secondary); 
+            display: flex; align-items: center; height: 42px; padding: 0 8px; border-radius: 4px; cursor: pointer; color: var(--text-secondary); 
             margin: 0 6px 2px 6px; font-size: 16px; font-weight: 500;
             transition: background-color 0.15s, color 0.15s, transform 0.05s; 
         }
-        .nav-item:hover { 
-            color: var(--text-primary); 
-            background-color: var(--violet-active-bg); 
-        }
-        .nav-item:active {
-            transform: scale(0.98); 
-        }
-        .nav-item.active-tab { 
-            color: var(--text-primary); 
-            background-color: var(--violet-active-bg); 
-            font-weight: 600; 
-        }
+        .nav-item:hover { color: var(--text-primary); background-color: var(--violet-active-bg); }
+        .nav-item:active { transform: scale(0.98); }
+        .nav-item.active-tab { color: var(--text-primary); background-color: var(--violet-active-bg); font-weight: 600; }
         .nav-item i { margin-right: 12px; font-size: 1.2em; width: 20px; text-align: center; }
 
-        .dm-category { 
-            color: var(--text-secondary); font-size: 12px; font-weight: 700; 
-            margin: 10px 8px 5px 6px; display: flex; justify-content: space-between;
-        }
-        
-        /* 2.3. Блок Пользователя/Настроек */
-        .user-settings { 
-            height: 54px; background-color: #23272A; padding: 0 8px; 
-            display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
-        }
-        .user-settings .controls i {
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 3px;
-            transition: color 0.15s, background-color 0.15s;
-        }
-        .user-settings .controls i:hover {
-            color: var(--text-primary);
-            background-color: var(--violet-active-bg);
-        }
+        .dm-category { color: var(--text-secondary); font-size: 12px; font-weight: 700; margin: 10px 8px 5px 6px; display: flex; justify-content: space-between; }
+        .user-settings { height: 54px; background-color: #23272A; padding: 0 8px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .user-settings .controls i { color: var(--text-secondary); cursor: pointer; padding: 5px; border-radius: 3px; transition: color 0.15s, background-color 0.15s; }
+        .user-settings .controls i:hover { color: var(--text-primary); background-color: var(--violet-active-bg); }
 
-        /* 3. Панель Чата (Контент) */
         .chat-panel { flex-grow: 1; background-color: var(--bg-med); display: flex; flex-direction: column; }
         .chat-header { height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
         .message-list { flex-grow: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; }
@@ -178,16 +109,93 @@
         .friends-content { padding: 24px; }
         .friends-content h2 { font-size: 20px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid #40444B; padding-bottom: 15px; margin-bottom: 15px; }
 
-        .message-input-area { padding: 20px 16px; flex-shrink: 0; }
-        .message-input-area input { 
-            width: 100%; height: 44px; border-radius: 8px; padding: 0 16px; 
-            background-color: var(--bg-light); color: var(--text-primary); border: none; 
-            font-size: 1em;
+        /* --- НОВЫЕ СТИЛИ ДЛЯ СПИСКА ДРУЗЕЙ --- */
+        .friends-list-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px; margin-bottom: 5px; border-radius: 4px;
+            border-top: 1px solid #40444B;
+            transition: background-color 0.15s;
+        }
+        .friends-list-item:hover {
+            background-color: var(--violet-active-bg);
+        }
+        .friend-info {
+            display: flex; align-items: center;
+        }
+        .friend-avatar {
+            width: 32px; height: 32px; border-radius: 50%; background-color: var(--violet-brand);
+            margin-right: 10px; position: relative;
+        }
+        .friend-status {
+            width: 10px; height: 10px; border-radius: 50%; border: 3px solid var(--bg-med);
+            position: absolute; bottom: -2px; right: -2px;
+        }
+        .status-online { background-color: var(--status-online); }
+        .status-offline { background-color: var(--user-status-offline); }
+
+        .friend-name-tag strong {
+            display: block; font-size: 16px; font-weight: 600;
+        }
+        .friend-name-tag small {
+            color: var(--text-secondary); font-size: 12px;
+        }
+        .friend-actions i {
+            color: var(--text-secondary); cursor: pointer; margin-left: 10px;
+            transition: color 0.15s;
+        }
+        .friend-actions i:hover {
+            color: var(--text-primary);
+        }
+
+        /* --- СТИЛИ ДЛЯ ФОРМЫ ДОБАВЛЕНИЯ --- */
+        .add-friend-form-container {
+            margin-bottom: 25px;
+            padding: 10px;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+        }
+        .add-friend-form-container h3 {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        .add-friend-form-container p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+        .add-friend-input-group {
+            display: flex;
+        }
+        .add-friend-input-group input {
+            flex-grow: 1;
+            background-color: var(--bg-dark);
+            border: 1px solid #40444B;
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+            padding: 8px;
+            color: var(--text-primary);
+        }
+        .add-friend-input-group button {
+            background-color: var(--violet-brand);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0 4px 4px 0;
             transition: background-color 0.2s;
         }
-        .message-input-area input:focus {
-            background-color: #40444B; 
+        .add-friend-input-group button:hover {
+            background-color: #4048c1;
         }
+        .add-friend-message {
+            margin-top: 10px;
+            font-size: 12px;
+            display: none;
+        }
+        .message-error { color: var(--unread-badge); }
+        .message-success { color: var(--status-online); }
     </style>
 </head>
 <body>
@@ -312,207 +320,201 @@
         const chatHeaderContent = document.getElementById('chatHeaderContent');
         const messageList = document.getElementById('messageList');
         const chatForm = document.getElementById('chatForm');
-        const membersPanel = document.querySelector('.members-panel');
-        const currentUsername = document.getElementById('currentUsername');
-        const logoutButton = document.getElementById('logoutButton'); // Кнопка выхода
+        const currentUsernameEl = document.getElementById('currentUsername');
+        const logoutButton = document.getElementById('logoutButton');
 
         const USER_TOKEN_KEY = 'discordCloneUserToken';
+        let currentActiveUser = null; // Глобальный объект для текущего пользователя
 
         // --- ДАННЫЕ (ИМИТАЦИЯ) ---
         const contentData = {
-            'friends-home': { title: 'Друзья', icon: 'fas fa-user-friends', content: getFriendsHomeContent(), hasInput: false },
-            'nitro': { title: 'Nitro', icon: 'fas fa-crown', content: getNitroContent(), hasInput: false },
-            'store': { title: 'Магазин', icon: 'fas fa-store', content: getStoreContent(), hasInput: false },
-            'tasks': { title: 'Задания', icon: 'fas fa-cog', content: getTasksContent(), hasInput: false },
+            'friends-home': { title: 'Друзья', icon: 'fas fa-user-friends', content: getFriendsHomeContent, hasInput: false },
+            'nitro': { title: 'Nitro', icon: 'fas fa-crown', content: getNitroContent, hasInput: false },
+            'store': { title: 'Магазин', icon: 'fas fa-store', content: getStoreContent, hasInput: false },
+            'tasks': { title: 'Задания', icon: 'fas fa-cog', content: getTasksContent, hasInput: false },
         };
 
-        // --- ФУНКЦИИ БЕЗОПАСНОСТИ/СЕССИИ ---
-
+        // --- ФУНКЦИИ УПРАВЛЕНИЯ ДАННЫМИ (Local Storage) ---
         function generateToken() {
-            // Простой уникальный токен на основе времени и случайного числа
             return 'token-' + Date.now().toString(36) + Math.random().toString(36).substr(2);
         }
 
         function encryptPassword(password) { return btoa(password); }
         function decryptPassword(encodedPassword) { return atob(encodedPassword); }
 
+        function getAllUsers() {
+            return JSON.parse(localStorage.getItem('users')) || [];
+        }
+
         function findUserByEmail(email) {
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            return storedUsers.find(u => u.email === email);
+            return getAllUsers().find(u => u.email === email);
+        }
+
+        function findUserByUsername(username) {
+            return getAllUsers().find(u => u.username.toLowerCase() === username.toLowerCase());
         }
 
         function findUserByToken(token) {
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            return storedUsers.find(u => u.token === token);
+            return getAllUsers().find(u => u.token === token);
         }
 
         function saveUser(user) {
-            let storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            storedUsers = storedUsers.filter(u => u.email !== user.email); // Удалить старую запись
+            let storedUsers = getAllUsers();
+            storedUsers = storedUsers.filter(u => u.id !== user.id); // Удалить старую запись по ID
             storedUsers.push(user);
             localStorage.setItem('users', JSON.stringify(storedUsers));
         }
 
-        function loginUser(user) {
-            // 1. Создать/обновить токен
-            const token = generateToken();
-            user.token = token;
-            
-            // 2. Сохранить токен и обновить пользователя
-            saveUser(user);
-            
-            // 3. Сохранить токен в ключе сессии (долгая сессия)
-            localStorage.setItem(USER_TOKEN_KEY, token);
+        // --- ФУНКЦИИ СЕССИИ И АУТЕНТИФИКАЦИИ ---
 
-            // 4. Загрузить UI
+        function initializeApp(user) {
+            currentActiveUser = user;
+            
+            // Если у пользователя нет массива друзей, создаем его
+            if (!user.friends) {
+                user.friends = [];
+                saveUser(user);
+            }
+
             loginScreen.style.display = 'none';
             mainApp.style.display = 'flex';
             document.body.style.backgroundColor = 'var(--bg-med)';
-            currentUsername.textContent = user.username;
+            currentUsernameEl.textContent = user.username;
             loadContent('friends-home');
         }
 
+        function loginUser(user) {
+            // Создать/обновить токен
+            const token = generateToken();
+            user.token = token;
+            
+            // Сохранить токен и обновить пользователя в БД (Local Storage)
+            saveUser(user);
+            
+            // Сохранить токен в ключе сессии (долгая сессия)
+            localStorage.setItem(USER_TOKEN_KEY, token);
+
+            // Загрузить UI
+            initializeApp(user);
+        }
+
         function logoutUser() {
-            // 1. Очистить токен из хранилища
             localStorage.removeItem(USER_TOKEN_KEY);
-            
-            // 2. Сбросить UI
+            currentActiveUser = null;
             mainApp.style.display = 'none';
             showScreen('login');
         }
 
-        // --- ЛОГИКА ВХОДА ---
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            loginErrorMsg.style.display = 'none';
+        // --- ЛОГИКА ДОБАВЛЕНИЯ ДРУЗЕЙ ---
 
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+        function addFriendLogic(friendUsername) {
+            const msgEl = document.getElementById('addFriendMessage');
+            msgEl.style.display = 'none';
 
-            const user = findUserByEmail(email);
+            // 1. Проверка на пустое поле
+            if (!friendUsername.trim()) {
+                msgEl.textContent = 'Введите имя пользователя.';
+                msgEl.className = 'add-friend-message message-error';
+                msgEl.style.display = 'block';
+                return;
+            }
 
-            if (user && decryptPassword(user.password) === password) {
-                loginUser(user); // Вызываем функцию логина с токенами
+            // 2. Поиск друга
+            const friend = findUserByUsername(friendUsername);
+
+            if (!friend) {
+                msgEl.textContent = `Пользователь с именем "${friendUsername}" не найден.`;
+                msgEl.className = 'add-friend-message message-error';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            // 3. Проверка на самого себя
+            if (friend.id === currentActiveUser.id) {
+                msgEl.textContent = 'Вы не можете добавить самого себя.';
+                msgEl.className = 'add-friend-message message-error';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            // 4. Проверка на уже существующего друга
+            if (currentActiveUser.friends.includes(friend.id)) {
+                msgEl.textContent = `${friend.username} уже ваш друг!`;
+                msgEl.className = 'add-friend-message message-error';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            // 5. Добавление (для простоты добавляем сразу, без запросов)
+            currentActiveUser.friends.push(friend.id);
+            saveUser(currentActiveUser);
+            
+            // Обновляем список друга (двустороннее добавление)
+            if (!friend.friends) friend.friends = [];
+            if (!friend.friends.includes(currentActiveUser.id)) {
+                friend.friends.push(currentActiveUser.id);
+                saveUser(friend);
+            }
+            
+            msgEl.textContent = `Успешно добавлен ${friend.username}!`;
+            msgEl.className = 'add-friend-message message-success';
+            msgEl.style.display = 'block';
+            
+            // Обновление списка друзей на экране
+            loadContent('friends-home');
+        }
+        
+        // --- ФОРМИРОВАНИЕ HTML КОНТЕНТА ---
+
+        function getFriendsHomeContent() {
+            const friends = currentActiveUser.friends.map(friendId => 
+                getAllUsers().find(u => u.id === friendId)
+            ).filter(f => f !== undefined);
+
+            let friendsListHTML = '';
+            
+            if (friends.length === 0) {
+                friendsListHTML = `<p style="color: var(--text-secondary); font-size: 14px; margin-top: 15px; padding: 0 10px;">Начните добавлять друзей по имени пользователя.</p>`;
             } else {
-                loginErrorMsg.style.display = 'block';
-            }
-        });
-        
-        // --- ЛОГИКА РЕГИСТРАЦИИ ---
-        registerForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            registerErrorMsg.style.display = 'none';
-            registerSuccessMsg.style.display = 'none';
-
-            const email = document.getElementById('regEmail').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value.trim();
-
-            if (!email || !username || !password) {
-                registerErrorMsg.textContent = 'Пожалуйста, заполните все поля.';
-                registerErrorMsg.style.display = 'block';
-                return;
-            }
-
-            if (findUserByEmail(email)) {
-                registerErrorMsg.textContent = 'Пользователь с таким email уже существует.';
-                registerErrorMsg.style.display = 'block';
-                return;
+                friendsListHTML = friends.map(friend => `
+                    <div class="friends-list-item">
+                        <div class="friend-info">
+                            <div class="friend-avatar">
+                                <span class="friend-status status-online"></span>
+                            </div>
+                            <div class="friend-name-tag">
+                                <strong>${friend.username}</strong>
+                                <small>В сети</small>
+                            </div>
+                        </div>
+                        <div class="friend-actions">
+                            <i class="fas fa-comment" title="Начать чат"></i>
+                            <i class="fas fa-ellipsis-v" title="Больше"></i>
+                        </div>
+                    </div>
+                `).join('');
             }
 
-            const newUser = {
-                email: email,
-                username: username,
-                password: encryptPassword(password), 
-                token: null, // Токен будет создан при первом входе
-                id: Date.now().toString() 
-            };
-            
-            saveUser(newUser);
+            return `
+                <div class="friends-content" style="padding: 0 10px;">
+                    <div class="add-friend-form-container">
+                        <h3>ДОБАВИТЬ В ДРУЗЬЯ</h3>
+                        <p>Вы можете добавить друга с помощью его имени пользователя. Имена чувствительны к регистру.</p>
+                        <form id="addFriendForm" class="add-friend-input-group">
+                            <input type="text" id="friendUsernameInput" placeholder="Введите имя пользователя">
+                            <button type="submit">Отправить запрос</button>
+                        </form>
+                        <div id="addFriendMessage" class="add-friend-message"></div>
+                    </div>
 
-            registerSuccessMsg.style.display = 'block';
-            registerForm.reset(); 
-            setTimeout(() => { showScreen('login'); }, 1500);
-        });
-
-        // --- ОБРАБОТЧИК ВЫХОДА ---
-        logoutButton.addEventListener('click', logoutUser);
-
-
-        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ АУТЕНТИФИКАЦИИ ---
-        showRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showScreen('register'); });
-        showLoginLink.addEventListener('click', (e) => { e.preventDefault(); showScreen('login'); });
-
-        function showScreen(screenName) {
-            loginScreen.style.display = 'none';
-            registerScreen.style.display = 'none';
-            mainApp.style.display = 'none';
-
-            if (screenName === 'login') {
-                loginScreen.style.display = 'block';
-                loginErrorMsg.style.display = 'none';
-            } else if (screenName === 'register') {
-                registerScreen.style.display = 'block';
-                registerErrorMsg.style.display = 'none';
-                registerSuccessMsg.style.display = 'none';
-            } else if (screenName === 'app') {
-                mainApp.style.display = 'flex';
-            }
+                    <h2 style="color: var(--text-secondary); padding-bottom: 10px; margin-bottom: 10px;">ДРУЗЬЯ — ${friends.length}</h2>
+                    <div id="friendsListContainer">
+                        ${friendsListHTML}
+                    </div>
+                </div>
+            `;
         }
 
-        // --- ИНИЦИАЛИЗАЦИЯ (ПРОВЕРКА ТОКЕНА СЕССИИ) ---
-        function checkSessionToken() {
-            const token = localStorage.getItem(USER_TOKEN_KEY);
-            if (token) {
-                const user = findUserByToken(token);
-                if (user) {
-                    // Токен действителен и сессия долгая - сразу входим!
-                    loginUser(user); 
-                    return;
-                } else {
-                    // Токен недействителен (пользователь удален, например)
-                    localStorage.removeItem(USER_TOKEN_KEY);
-                }
-            }
-            // Если токена нет или он недействителен, показываем экран входа
-            showScreen('login');
-        }
-
-        // --- ВЫЗОВ ИНИЦИАЛИЗАЦИИ ---
-        checkSessionToken(); 
-
-
-        // --- МАКЕТЫ КОНТЕНТА и ОБРАБОТЧИКИ (без изменений) ---
-        function loadContent(key) {
-            const data = contentData[key];
-            chatHeaderContent.innerHTML = `<i class="${data.icon}" style="margin-right: 8px; color: ${key === 'friends-home' ? 'var(--text-primary)' : 'var(--text-secondary)'};"></i>${data.title}`;
-            messageList.innerHTML = data.content;
-            chatForm.style.display = data.hasInput ? 'flex' : 'none';
-            membersPanel.style.width = key.startsWith('channel') ? '280px' : '0';
-        }
-        
-        channelList.addEventListener('click', (e) => {
-            const item = e.target.closest('.nav-item');
-            if (!item) return;
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-tab'));
-            item.classList.add('active-tab');
-            const targetKey = item.getAttribute('data-target');
-            if (targetKey) { loadContent(targetKey); }
-        });
-
-        document.querySelector('.servers-panel').addEventListener('click', (e) => {
-            const icon = e.target.closest('.server-icon');
-            if (!icon) return;
-            document.querySelectorAll('.server-icon').forEach(i => i.classList.remove('active'));
-            icon.classList.add('active');
-            if (icon.id === 'friendsServerIcon') {
-                document.getElementById('channelHeader').innerHTML = '<input type="text" placeholder="Найти или начать беседу">';
-                channelList.innerHTML = getFriendsNav();
-                loadContent('friends-home');
-            } 
-        });
-
-        function getFriendsHomeContent() { return `<div class="friends-content"><h2 style="color: var(--text-secondary);">ДРУЗЬЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Никто не онлайн. :( Начните добавлять друзей!</p></div>`; }
         function getNitroContent() { return `<div class="friends-content"><h2>DISCORD NITRO</h2><p style="color: var(--text-secondary); font-size: 14px;">Покупайте Nitro и поддержите нас!</p></div>`; }
         function getStoreContent() { return `<div class="friends-content"><h2>МАГАЗИН</h2><p style="color: var(--text-secondary); font-size: 14px;">Эксклюзивные товары.</p></div>`; }
         function getTasksContent() { return `<div class="friends-content"><h2>ЗАДАНИЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Нет активных заданий.</p></div>`; }
@@ -536,6 +538,138 @@
                 </div>
                 `;
         }
+
+        // --- ЛОГИКА ЗАГРУЗКИ КОНТЕНТА ---
+        function loadContent(key) {
+            const data = contentData[key];
+            
+            chatHeaderContent.innerHTML = `<i class="${data.icon}" style="margin-right: 8px; color: ${key === 'friends-home' ? 'var(--text-primary)' : 'var(--text-secondary)'};"></i>${data.title}`;
+            
+            // Если контент - это функция (для динамической генерации), вызываем ее
+            if (typeof data.content === 'function') {
+                messageList.innerHTML = data.content();
+            } else {
+                messageList.innerHTML = data.content;
+            }
+            
+            chatForm.style.display = data.hasInput ? 'flex' : 'none';
+            
+            // Добавляем обработчик формы добавления друга, если мы на вкладке "Друзья"
+            if (key === 'friends-home') {
+                const addFriendForm = document.getElementById('addFriendForm');
+                if (addFriendForm) {
+                    addFriendForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const usernameInput = document.getElementById('friendUsernameInput');
+                        addFriendLogic(usernameInput.value);
+                        usernameInput.value = ''; // Очистка поля
+                    });
+                }
+            }
+        }
+        
+        // --- ОБРАБОТЧИКИ (без изменений, кроме переключения контента) ---
+
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            loginErrorMsg.style.display = 'none';
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const user = findUserByEmail(email);
+            if (user && decryptPassword(user.password) === password) {
+                loginUser(user);
+            } else {
+                loginErrorMsg.style.display = 'block';
+            }
+        });
+
+        registerForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            registerErrorMsg.style.display = 'none';
+            registerSuccessMsg.style.display = 'none';
+            const email = document.getElementById('regEmail').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            if (!email || !username || !password) {
+                registerErrorMsg.textContent = 'Пожалуйста, заполните все поля.';
+                registerErrorMsg.style.display = 'block';
+                return;
+            }
+            if (findUserByEmail(email)) {
+                registerErrorMsg.textContent = 'Пользователь с таким email уже существует.';
+                registerErrorMsg.style.display = 'block';
+                return;
+            }
+            const newUser = {
+                email: email,
+                username: username,
+                password: encryptPassword(password), 
+                token: null,
+                id: Date.now().toString(),
+                friends: [] // Инициализация пустого списка друзей
+            };
+            saveUser(newUser);
+            registerSuccessMsg.style.display = 'block';
+            registerForm.reset(); 
+            setTimeout(() => { showScreen('login'); }, 1500);
+        });
+
+        logoutButton.addEventListener('click', logoutUser);
+        showRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showScreen('register'); });
+        showLoginLink.addEventListener('click', (e) => { e.preventDefault(); showScreen('login'); });
+
+        function showScreen(screenName) {
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'none';
+            mainApp.style.display = 'none';
+            if (screenName === 'login') {
+                loginScreen.style.display = 'block';
+                loginErrorMsg.style.display = 'none';
+            } else if (screenName === 'register') {
+                registerScreen.style.display = 'block';
+                registerErrorMsg.style.display = 'none';
+                registerSuccessMsg.style.display = 'none';
+            } else if (screenName === 'app') {
+                mainApp.style.display = 'flex';
+            }
+        }
+        
+        channelList.addEventListener('click', (e) => {
+            const item = e.target.closest('.nav-item');
+            if (!item) return;
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-tab'));
+            item.classList.add('active-tab');
+            const targetKey = item.getAttribute('data-target');
+            if (targetKey) { loadContent(targetKey); }
+        });
+
+        document.querySelector('.servers-panel').addEventListener('click', (e) => {
+            const icon = e.target.closest('.server-icon');
+            if (!icon) return;
+            document.querySelectorAll('.server-icon').forEach(i => i.classList.remove('active'));
+            icon.classList.add('active');
+            if (icon.id === 'friendsServerIcon') {
+                document.getElementById('channelHeader').innerHTML = '<input type="text" placeholder="Найти или начать беседу">';
+                channelList.innerHTML = getFriendsNav();
+                loadContent('friends-home');
+            } 
+        });
+
+        // --- ИНИЦИАЛИЗАЦИЯ ---
+        function checkSessionToken() {
+            const token = localStorage.getItem(USER_TOKEN_KEY);
+            if (token) {
+                const user = findUserByToken(token);
+                if (user) {
+                    initializeApp(user); 
+                    return;
+                } else {
+                    localStorage.removeItem(USER_TOKEN_KEY);
+                }
+            }
+            showScreen('login');
+        }
+        checkSessionToken(); 
     </script>
 </body>
 </html>
