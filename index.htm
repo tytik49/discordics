@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фиолетовый Дискорд — 1-в-1 Копия</title>
+    <title>Discord Clone: Final Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        /* CSS Стили для всего приложения */
+        /* CSS Переменные */
         :root {
             --bg-dark: #202225; /* Серверы, нижний бар */
-            --bg-med: #2F3136; /* Каналы, ввод чата */
-            --bg-light: #36393F; /* Чат, список участников */
+            --bg-med: #2F3136; /* Чат, список участников */
+            --bg-light: #36393F; /* Ввод чата, активный сервер/чат */
+            --bg-channels: #2F3136; /* Фон панели каналов/друзей */
             --violet-brand: #5865F2; /* Активный фиолетовый */
-            --violet-active-bg: #40444B; /* Фон активного канала */
+            --violet-active-bg: #40444B; /* Фон ховера */
             --text-primary: #DCDDDE;
             --text-secondary: #99AAB5;
             --status-online: #43B581;
-            --error-color: #F04747;
-            --button-danger: #F04747;
+            --unread-badge: #F23F43; /* Красный бейдж уведомления */
             --font-family: 'Montserrat', sans-serif;
         }
 
@@ -38,121 +38,111 @@
             transition: background-color 0.5s;
         }
 
-        /* --- Стили Входа --- */
+        /* --- 1. СТИЛИ ВХОДА (Улучшенный) --- */
         .login-container { 
-            width: 480px; padding: 32px; background-color: var(--bg-light); border-radius: 5px; 
-            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.2); text-align: center; position: absolute;
+            width: 480px; padding: 32px; background-color: var(--bg-med); border-radius: 5px; 
+            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.5); text-align: center; position: absolute;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
-        .login-container h2 { color: var(--text-primary); font-weight: 600; }
-        /* ... остальные стили входа ... */
-        
-        /* --- Стили Главного Экрана --- */
+        .login-container h2 { color: var(--text-primary); font-weight: 700; font-size: 28px; margin-bottom: 5px; }
+        .login-container p { color: var(--text-secondary); font-size: 16px; margin-bottom: 25px; }
+        .login-container label { 
+            display: block; text-align: left; color: var(--text-secondary); 
+            font-size: 12px; font-weight: 700; margin-top: 15px; margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .login-container input {
+            width: 100%; padding: 10px; background-color: var(--bg-dark); 
+            border: 1px solid #202225; border-radius: 3px; color: var(--text-primary); 
+            font-size: 16px; transition: border-color 0.2s;
+        }
+        .login-container button {
+            width: 100%; padding: 10px; margin-top: 20px; background-color: var(--violet-brand);
+            border: none; border-radius: 3px; color: var(--text-primary); font-weight: 600;
+            cursor: pointer;
+        }
+        .error-message { color: var(--unread-badge); margin-top: 15px; font-size: 14px; display: none; }
+        .register-link a { color: var(--violet-brand); text-decoration: none; }
+
+
+        /* --- 2. СТИЛИ ГЛАВНОГО ЭКРАНА --- */
         .app-container {
             display: none; 
             height: 100vh;
             color: var(--text-primary);
-            font-weight: 500;
         }
         
-        /* 1. Панель Серверов */
-        .servers-panel { width: 72px; background-color: #202225; padding: 10px 0; flex-shrink: 0; overflow-y: auto; }
+        /* 2.1. Панель Серверов */
+        .servers-panel { width: 72px; background-color: #1E1F22; padding: 10px 0; flex-shrink: 0; overflow-y: auto; }
         .server-icon { 
             width: 50px; height: 50px; background-color: #36393F; border-radius: 50%; 
             margin: 8px auto; display: flex; align-items: center; justify-content: center; 
-            color: var(--text-primary); font-size: 1.5em; cursor: pointer; transition: border-radius 0.2s, background-color 0.2s;
+            color: var(--text-primary); font-size: 1.5em; cursor: pointer; position: relative;
         }
-        .server-icon:hover { background-color: var(--violet-brand); }
+        .server-icon:hover { background-color: var(--violet-brand); border-radius: 30%; }
         .server-icon.active { border-radius: 30%; background-color: var(--violet-brand); }
+        
+        /* Бейджи уведомлений */
+        .server-icon .badge {
+            position: absolute; top: -5px; right: -5px; background: var(--unread-badge);
+            color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; 
+            border-radius: 50%; border: 3px solid #1E1F22; min-width: 20px; text-align: center;
+        }
 
-        /* 2. Панель Каналов (Друзья/Настройки) */
+        /* 2.2. Панель Каналов/Друзей (Идеальная копия) */
         .channels-panel { 
-            width: 240px; background-color: var(--bg-med); display: flex; flex-direction: column; flex-shrink: 0; 
+            width: 240px; background-color: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; 
         }
         .channel-header { 
             height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; 
             border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
-            display: flex; align-items: center;
         }
         .channel-list { flex-grow: 1; padding: 8px; overflow-y: auto; }
-        .channel-category { color: var(--text-secondary); font-size: 0.7em; font-weight: 700; margin: 10px 8px 5px; }
         
-        /* Стиль Друзей и Каналов */
-        .channel-item { 
+        /* Элементы навигации (Друзья, Нитро, Магазин) */
+        .nav-item {
             display: flex; align-items: center; height: 42px; padding: 0 8px; 
             border-radius: 4px; cursor: pointer; color: var(--text-secondary); 
-            margin: 0 6px 2px 6px; 
-            font-size: 16px; /* Чуть крупнее для списка друзей */
+            margin: 0 6px 2px 6px; font-size: 16px; font-weight: 500;
         }
-        .channel-item:hover { color: var(--text-primary); background-color: var(--violet-active-bg); }
-        
-        /* АКТИВНЫЙ ЭЛЕМЕНТ (Скриншот!) */
-        .channel-item.active-tab { 
+        .nav-item:hover { color: var(--text-primary); background-color: var(--violet-active-bg); }
+        .nav-item.active-tab { 
             color: var(--text-primary); 
-            background-color: var(--violet-brand); 
+            background-color: var(--violet-active-bg); 
         }
-        .channel-item.active-tab i { color: var(--text-primary); } /* Иконка в активном элементе */
-        
-        .channel-item i { margin-right: 8px; opacity: 0.8; font-size: 1.2em; }
+        .nav-item i { margin-right: 12px; font-size: 1.2em; width: 20px; text-align: center; }
 
-        /* Поле поиска в шапке Друзей */
-        .channel-header input {
-             background: var(--bg-dark); border: none; color: var(--text-primary); 
-             padding: 5px 10px; border-radius: 4px; width: 100%;
+        .dm-category { 
+            color: var(--text-secondary); font-size: 12px; font-weight: 700; 
+            margin: 10px 8px 5px 6px; display: flex; justify-content: space-between;
         }
-
-        /* --- Блок голосового статуса (как на скриншоте) --- */
-        .voice-status {
-            padding: 10px 0;
-            margin: 10px 10px 0 10px;
-            color: var(--text-primary);
-        }
-        .voice-status p { margin-bottom: 5px; font-size: 0.9em;}
-        .voice-status span { color: var(--status-online); font-weight: 600; }
         
-        .call-controls button {
-            background-color: #202225; 
-            border: none;
-            color: var(--text-secondary);
-            width: 30px; height: 30px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
+        /* Элементы Личных сообщений */
+        .dm-item {
+            display: flex; align-items: center; height: 42px; padding: 0 8px; 
+            border-radius: 4px; cursor: pointer; color: var(--text-secondary); 
+            margin: 0 6px 2px 6px; position: relative;
         }
-        .call-controls .end-call {
-            background-color: var(--button-danger);
-            color: var(--text-primary);
+        .dm-item:hover { color: var(--text-primary); background-color: var(--violet-active-bg); }
+        .dm-item .dm-avatar { width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; background-color: #5865F2; }
+        .dm-item.unread .dm-name { font-weight: 600; color: var(--text-primary); } /* Непрочитанное сообщение */
+        
+        /* 2.3. Блок Пользователя/Настроек (остается прежним) */
+        .user-settings { 
+            height: 54px; background-color: #23272A; padding: 0 8px; 
+            display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
-        /* --- Конец блока голосового статуса --- */
 
         /* 3. Панель Чата (Контент) */
-        .chat-panel { flex-grow: 1; background-color: var(--bg-light); display: flex; flex-direction: column; }
+        .chat-panel { flex-grow: 1; background-color: var(--bg-med); display: flex; flex-direction: column; }
         .chat-header { height: 48px; padding: 0 16px; line-height: 48px; font-weight: 600; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
         .message-list { flex-grow: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; }
         
-        /* Блок контента Друзей (Онлайн/Все/Ожидание) */
-        .friends-content {
-            padding: 24px;
-        }
-        .friends-content h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--bg-med);
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-        }
-        .friends-content .friend-row {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
-        .friends-content .friend-row:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-        
+        .friends-content { padding: 24px; }
+        .friends-content h2 { font-size: 20px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid #40444B; padding-bottom: 15px; margin-bottom: 15px; }
+
+        .message-input-area { padding: 20px 16px; flex-shrink: 0; }
+        .message-input-area input { width: 100%; height: 44px; border-radius: 8px; padding: 0 16px; background-color: var(--bg-light); color: var(--text-primary); border: none; font-size: 1em; }
     </style>
 </head>
 <body>
@@ -165,6 +155,9 @@
             <input type="email" id="email" required>
             <label for="password">ПАРОЛЬ</label>
             <input type="password" id="password" required>
+            
+            <a href="#" style="color: var(--violet-brand); font-size: 12px; display: block; text-align: left; margin-top: 5px;">Забыли пароль?</a>
+
             <button type="submit">Войти</button>
             <div class="error-message" id="errorMsg">Неверный email или пароль. Пожалуйста, попробуйте снова.</div>
         </form>
@@ -176,29 +169,47 @@
 
     <div class="app-container" id="mainApp">
         <div class="servers-panel">
-            <div class="server-icon active" id="friendsServerIcon"><i class="fas fa-user-friends"></i></div>
+            <div class="server-icon active" id="friendsServerIcon"><i class="fab fa-discord" style="font-size: 24px;"></i></div>
             <div class="server-icon">💜</div>
-            <div class="server-icon"><i class="fas fa-code"></i></div>
+            <div class="server-icon"><i class="fas fa-code"></i><span class="badge">2</span></div>
+            <div class="server-icon"><i class="fas fa-gamepad"></i><span class="badge">20</span></div>
             <div class="server-icon add-server"><i class="fas fa-plus"></i></div>
         </div>
 
         <div class="channels-panel">
             <div class="channel-header" id="channelHeader">
-                <input type="text" placeholder="Найти или начать разговор">
+                <input type="text" placeholder="Найти или начать беседу">
             </div>
             <div class="channel-list" id="channelList">
                 
-                <div class="channel-item active-tab" data-target="friends-online" id="friendsTab">
+                <div class="nav-item active-tab" data-target="friends-home">
                     <i class="fas fa-user-friends"></i> Друзья
                 </div>
-                <div class="channel-item" data-target="friends-online">
-                    <i class="fas fa-dot-circle" style="color: var(--status-online); opacity: 1;"></i> Онлайн
+                <div class="nav-item" data-target="nitro">
+                    <i class="fas fa-crown"></i> Nitro
                 </div>
-                <div class="channel-item" data-target="friends-all">
-                    <i class="fas fa-users"></i> Все
+                <div class="nav-item" data-target="store">
+                    <i class="fas fa-store"></i> Магазин
                 </div>
-                <div class="channel-item" data-target="friends-pending">
-                    <i class="fas fa-bell"></i> Ожидание
+                <div class="nav-item" data-target="tasks">
+                    <i class="fas fa-cog"></i> Задания
+                </div>
+                
+                <div class="dm-category">
+                    Личные сообщения <i class="fas fa-plus" style="font-size: 10px; cursor: pointer;"></i>
+                </div>
+                
+                <div class="dm-item unread" data-target="dm-siago">
+                    <span class="dm-avatar" style="background-image: url('data:image/jpeg;base64,...');"></span>
+                    <span class="dm-name">siago47, xxxtraithor...</span>
+                </div>
+                <div class="dm-item" data-target="dm-aoenkaii">
+                    <span class="dm-avatar" style="background-image: url('data:image/jpeg;base64,...'); background-color: #A000A0;"></span>
+                    <span class="dm-name">aoenkaii</span>
+                </div>
+                <div class="dm-item" data-target="dm-lol">
+                    <span class="dm-avatar" style="background-color: #F23F43;"></span>
+                    <span class="dm-name">lol</span>
                 </div>
             </div>
 
@@ -230,7 +241,7 @@
             </form>
         </div>
 
-        <div class="members-panel" style="width: 0; background-color: var(--bg-light);">
+        <div class="members-panel" style="width: 0; background-color: var(--bg-med);">
         </div>
     </div>
 
@@ -239,21 +250,20 @@
         const loginForm = document.getElementById('loginForm');
         const loginScreen = document.getElementById('loginScreen');
         const mainApp = document.getElementById('mainApp');
-        const errorMsg = document.getElementById('errorMsg');
         const chatForm = document.getElementById('chatForm');
-        const chatInput = document.getElementById('chatInput');
         const messageList = document.getElementById('messageList');
         const chatHeaderContent = document.getElementById('chatHeaderContent');
         const channelList = document.getElementById('channelList');
         const membersPanel = document.querySelector('.members-panel');
         
         // --- ДАННЫЕ (ИМИТАЦИЯ) ---
-        const friendContentData = {
-            'friends-online': { title: 'Онлайн', content: '<div class="friends-content"><h2 style="color: var(--text-secondary);">ОНЛАЙН</h2><p style="color: var(--text-secondary); font-size: 14px;">Никто не онлайн. :(</p></div>', isDM: true },
-            'friends-all': { title: 'Все друзья', content: '<div class="friends-content"><h2 style="color: var(--text-secondary);">ВСЕ ДРУЗЬЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Здесь будет список всех ваших друзей.</p></div>', isDM: true },
-            'friends-pending': { title: 'Ожидание', content: '<div class="friends-content"><h2 style="color: var(--text-secondary);">ОЖИДАНИЕ</h2><p style="color: var(--text-secondary); font-size: 14px;">У вас нет входящих заявок в друзья.</p></div>', isDM: true },
-            'channel-общие': { title: '# общие', content: createSampleMessages(), isDM: false },
-            'channel-мемы': { title: '# мемы', content: '<div class="friends-content"><h2 style="color: var(--text-secondary);">КАНАЛ МЕМЫ</h2><p style="color: var(--text-secondary); font-size: 14px;">Здесь пока пусто.</p></div>', isDM: false }
+        const contentData = {
+            'friends-home': { title: 'Друзья', icon: 'fas fa-user-friends', content: getFriendsHomeContent(), isDM: true },
+            'nitro': { title: 'Nitro', icon: 'fas fa-crown', content: getNitroContent(), isDM: true },
+            'store': { title: 'Магазин', icon: 'fas fa-store', content: getStoreContent(), isDM: true },
+            'tasks': { title: 'Задания', icon: 'fas fa-cog', content: getTasksContent(), isDM: true },
+            'dm-siago': { title: 'siago47, xxxtraithor...', icon: 'fas fa-users', content: getDMContent('siago47'), isDM: false, hasInput: true },
+            'channel-общие': { title: '# общие', icon: 'fas fa-hashtag', content: getChannelContent('общие'), isDM: false, hasInput: true },
         };
 
         // --- ЛОГИКА ВХОДА ---
@@ -263,39 +273,43 @@
             const TEST_PASSWORD = '123456';
 
             if (document.getElementById('email').value.trim() === TEST_EMAIL && document.getElementById('password').value.trim() === TEST_PASSWORD) {
+                document.getElementById('errorMsg').style.display = 'none';
                 loginScreen.style.display = 'none';
                 mainApp.style.display = 'flex'; 
-                document.body.style.backgroundColor = 'var(--bg-light)'; 
-                loadContent('friends-online'); // Загружаем "Онлайн" по умолчанию
+                document.body.style.backgroundColor = 'var(--bg-med)'; 
+                loadContent('friends-home'); 
             } else {
-                errorMsg.style.display = 'block';
+                document.getElementById('errorMsg').style.display = 'block';
             }
         });
 
-        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ КОНТЕНТА (Каналы/Друзья) ---
+        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ КОНТЕНТА ---
         function loadContent(key) {
-            const data = friendContentData[key];
+            const data = contentData[key];
             
             // 1. Обновляем заголовок чата
-            chatHeaderContent.innerHTML = `<i class="${data.isDM ? 'fas fa-user-friends' : 'fas fa-hashtag'}" style="margin-right: 8px;"></i>${data.title}`;
+            chatHeaderContent.innerHTML = `<i class="${data.icon}" style="margin-right: 8px; color: ${data.icon === 'fab fa-discord' ? 'var(--violet-brand)' : 'var(--text-secondary)'};"></i>${data.title}`;
             
             // 2. Загружаем контент
             messageList.innerHTML = data.content;
             
             // 3. Скрываем/показываем поле ввода чата
-            chatForm.style.display = data.isDM ? 'none' : 'flex';
+            chatForm.style.display = data.hasInput ? 'flex' : 'none';
 
             // 4. Скрываем/показываем панель участников (скрыта для DM/Friends)
-            membersPanel.style.width = data.isDM ? '0' : '280px';
+            membersPanel.style.width = key.startsWith('channel') ? '280px' : '0';
         }
         
-        // --- ОБРАБОТЧИК КЛИКОВ (Друзья/Каналы) ---
+        // --- ОБРАБОТЧИК КЛИКОВ (Навигация/DM/Серверы) ---
         channelList.addEventListener('click', (e) => {
-            const item = e.target.closest('.channel-item');
+            const item = e.target.closest('.nav-item') || e.target.closest('.dm-item');
             if (!item) return;
             
-            // Сброс активного статуса
-            document.querySelectorAll('.channel-item').forEach(i => i.classList.remove('active-tab'));
+            // Сброс активного статуса навигации
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-tab'));
+            document.querySelectorAll('.dm-item').forEach(i => i.classList.remove('active-tab', 'unread'));
+            
+            // Активируем элемент
             item.classList.add('active-tab');
             
             const targetKey = item.getAttribute('data-target');
@@ -304,78 +318,91 @@
             }
         });
 
-        // --- ОБРАБОТЧИК КЛИКОВ (Серверы) ---
         document.querySelector('.servers-panel').addEventListener('click', (e) => {
             const icon = e.target.closest('.server-icon');
             if (!icon) return;
             
-            // Сброс активного статуса на всех серверах
             document.querySelectorAll('.server-icon').forEach(i => i.classList.remove('active'));
             icon.classList.add('active');
             
+            // Имитация переключения
             if (icon.textContent.includes('💜')) {
-                // Переключение на сервер "Сообщество"
+                // Сервер 💜
                 document.getElementById('channelHeader').innerHTML = '<span style="padding: 0 10px;">Фиолетовое Сообщество</span>';
                 channelList.innerHTML = getCommunityChannels();
                 loadContent('channel-общие');
             } else if (icon.id === 'friendsServerIcon') {
-                // Переключение на "Друзья"
-                document.getElementById('channelHeader').innerHTML = '<input type="text" placeholder="Найти или начать разговор">';
-                channelList.innerHTML = getFriendsChannels();
-                loadContent('friends-online');
+                // Друзья
+                document.getElementById('channelHeader').innerHTML = '<input type="text" placeholder="Найти или начать беседу">';
+                channelList.innerHTML = getFriendsNav();
+                loadContent('friends-home');
             }
         });
+
+        // --- МАКЕТЫ КОНТЕНТА ---
+        function getFriendsHomeContent() {
+            return `<div class="friends-content"><h2 style="color: var(--text-secondary);">ДРУЗЬЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Здесь будет ваш список друзей, **как в настоящем Discord**.</p></div>`;
+        }
+        function getNitroContent() {
+            return `<div class="friends-content"><h2>DISCORD NITRO</h2><p style="color: var(--text-secondary); font-size: 14px;">Покупайте Nitro и поддержите нас!</p></div>`;
+        }
+        function getStoreContent() {
+            return `<div class="friends-content"><h2>МАГАЗИН</h2><p style="color: var(--text-secondary); font-size: 14px;">Эксклюзивные товары.</p></div>`;
+        }
+        function getTasksContent() {
+            return `<div class="friends-content"><h2>ЗАДАНИЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Нет активных заданий.</p></div>`;
+        }
+        function getDMContent(user) {
+            return `<div class="friends-content"><h2>ЛИЧНОЕ СООБЩЕНИЕ С ${user.toUpperCase()}</h2><p style="color: var(--text-secondary); font-size: 14px;">Начните переписку!</p></div>`;
+        }
+        function getChannelContent(channel) {
+            return `<div class="friends-content"><h2>КАНАЛ ${channel.toUpperCase()}</h2></div>`;
+        }
         
-        // --- ДАННЫЕ И МАКЕТЫ ---
-        function getFriendsChannels() {
+        function getFriendsNav() {
             return `
-                <div class="channel-item active-tab" data-target="friends-online">
+                <div class="nav-item active-tab" data-target="friends-home">
                     <i class="fas fa-user-friends"></i> Друзья
                 </div>
-                <div class="channel-item" data-target="friends-online">
-                    <i class="fas fa-dot-circle" style="color: var(--status-online); opacity: 1;"></i> Онлайн
+                <div class="nav-item" data-target="nitro">
+                    <i class="fas fa-crown"></i> Nitro
                 </div>
-                <div class="channel-item" data-target="friends-all">
-                    <i class="fas fa-users"></i> Все
+                <div class="nav-item" data-target="store">
+                    <i class="fas fa-store"></i> Магазин
                 </div>
-                <div class="channel-item" data-target="friends-pending">
-                    <i class="fas fa-bell"></i> Ожидание
+                <div class="nav-item" data-target="tasks">
+                    <i class="fas fa-cog"></i> Задания
+                </div>
+                
+                <div class="dm-category">
+                    Личные сообщения <i class="fas fa-plus" style="font-size: 10px; cursor: pointer;"></i>
+                </div>
+                
+                <div class="dm-item unread" data-target="dm-siago">
+                    <span class="dm-avatar" style="background-color: #5865F2;"></span>
+                    <span class="dm-name">siago47, xxxtraithor...</span>
+                </div>
+                <div class="dm-item" data-target="dm-aoenkaii">
+                    <span class="dm-avatar" style="background-color: #A000A0;"></span>
+                    <span class="dm-name">aoenkaii</span>
+                </div>
+                <div class="dm-item" data-target="dm-lol">
+                    <span class="dm-avatar" style="background-color: #F23F43;"></span>
+                    <span class="dm-name">lol</span>
                 </div>
             `;
         }
         
         function getCommunityChannels() {
             return `
-                <div class="channel-category">ТЕКСТОВЫЕ КАНАЛЫ</div>
-                <div class="channel-item active-tab" data-target="channel-общие">
+                <div class="dm-category" style="font-size: 14px; margin-left: 10px;">КАНАЛЫ</div>
+                <div class="nav-item active-tab" data-target="channel-общие">
                     <i class="fas fa-hashtag"></i> общие
                 </div>
-                <div class="channel-item" data-target="channel-мемы">
+                <div class="nav-item" data-target="channel-мемы">
                     <i class="fas fa-hashtag"></i> мемы
                 </div>
-                
-                <div class="channel-category">ГОЛОСОВЫЕ КАНАЛЫ</div>
-                <div class="channel-item voice" style="background-color: rgba(114, 137, 218, 0.2);">
-                    <i class="fas fa-headset"></i> Общий Голос
-                </div>
-
-                <div class="voice-status">
-                    <p>Вы в: <span>Общий Голос</span></p>
-                    <div class="call-controls">
-                        <button><i class="fas fa-microphone"></i></button>
-                        <button><i class="fas fa-volume-up"></i></button>
-                        <button class="end-call"><i class="fas fa-phone-alt"></i></button>
-                    </div>
-                </div>
             `;
-        }
-        
-        function createSampleMessages() {
-             return `
-                <div class="friends-content">
-                    <h2 style="color: var(--text-secondary);">КАНАЛ ОБЩИЕ</h2>
-                </div>
-                `;
         }
         
     </script>
