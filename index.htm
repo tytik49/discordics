@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Clone: Добавление Друзей</title>
+    <title>Discord Clone: Исправление Сессии</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -22,49 +22,21 @@
             --status-online: #43B581;
             --unread-badge: #F23F43; 
             --font-family: 'Montserrat', sans-serif;
-            --user-status-offline: #747f8d; /* Серый */
+            --user-status-offline: #747f8d; 
+            --red-delete: #F04747;
         }
 
-        /* (Общие стили и стили аутентификации - без изменений) */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: var(--font-family);
-        }
-        /* ... (Стили аутентификации и основного макета) ... */
-        body, html {
-            height: 100%;
-            overflow: hidden;
-            background: var(--bg-dark);
-            transition: background-color 0.5s;
-        }
+        /* (Стили UI - без изменений, кроме добавления --red-delete) */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); }
+        body, html { height: 100%; overflow: hidden; background: var(--bg-dark); transition: background-color 0.5s; }
 
-        .auth-container { 
-            width: 480px; padding: 32px; background-color: var(--bg-med); border-radius: 5px; 
-            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.5); text-align: center; position: absolute;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-        }
+        .auth-container { width: 480px; padding: 32px; background-color: var(--bg-med); border-radius: 5px; box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.5); text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         .auth-container h2 { color: var(--text-primary); font-weight: 700; font-size: 28px; margin-bottom: 5px; }
         .auth-container p { color: var(--text-secondary); font-size: 16px; margin-bottom: 25px; }
-        .auth-container label { 
-            display: block; text-align: left; color: var(--text-secondary); 
-            font-size: 12px; font-weight: 700; margin-top: 15px; margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        .auth-container input {
-            width: 100%; padding: 10px; background-color: var(--bg-dark); 
-            border: 1px solid #202225; border-radius: 3px; color: var(--text-primary); 
-            font-size: 16px; 
-            transition: border-color 0.2s; 
-        }
+        .auth-container label { display: block; text-align: left; color: var(--text-secondary); font-size: 12px; font-weight: 700; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; }
+        .auth-container input { width: 100%; padding: 10px; background-color: var(--bg-dark); border: 1px solid #202225; border-radius: 3px; color: var(--text-primary); font-size: 16px; transition: border-color 0.2s; }
         .auth-container input:focus { border-color: var(--violet-brand); outline: none; }
-        .auth-container button {
-            width: 100%; padding: 10px; margin-top: 20px; background-color: var(--violet-brand);
-            border: none; border-radius: 3px; color: var(--text-primary); font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s; 
-        }
+        .auth-container button { width: 100%; padding: 10px; margin-top: 20px; background-color: var(--violet-brand); border: none; border-radius: 3px; color: var(--text-primary); font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
         .auth-container button:hover { background-color: #4048c1; } 
         .auth-container .error-message { color: var(--unread-badge); margin-top: 15px; font-size: 14px; display: none; }
         .auth-container .link-text { margin-top: 15px; font-size: 12px; color: var(--text-secondary); }
@@ -72,11 +44,7 @@
 
         .app-container { display: none; height: 100vh; color: var(--text-primary); }
         .servers-panel { width: 72px; background-color: #1E1F22; padding: 10px 0; flex-shrink: 0; overflow-y: auto; }
-        .server-icon { 
-            width: 50px; height: 50px; background-color: #36393F; margin: 8px auto; display: flex; align-items: center; justify-content: center; 
-            color: var(--text-primary); font-size: 1.5em; cursor: pointer; position: relative;
-            transition: border-radius 0.25s ease-out, background-color 0.25s ease-out; border-radius: 50%; 
-        }
+        .server-icon { width: 50px; height: 50px; background-color: #36393F; margin: 8px auto; display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-size: 1.5em; cursor: pointer; position: relative; transition: border-radius 0.25s ease-out, background-color 0.25s ease-out; border-radius: 50%; }
         #friendsServerIcon { background-color: var(--violet-brand); border-radius: 50%; font-size: 24px; }
         #friendsServerIcon:hover { background-color: var(--violet-brand); border-radius: 50%; transform: scale(1.05); } 
         .server-icon.add-server { background-color: #36393F; border-radius: 50%; font-size: 1.5em; }
@@ -87,11 +55,7 @@
         .channel-header input { background: var(--bg-dark); border: none; color: var(--text-primary); padding: 5px 10px; border-radius: 4px; width: 100%; }
         .channel-list { flex-grow: 1; padding: 8px; overflow-y: auto; }
         
-        .nav-item {
-            display: flex; align-items: center; height: 42px; padding: 0 8px; border-radius: 4px; cursor: pointer; color: var(--text-secondary); 
-            margin: 0 6px 2px 6px; font-size: 16px; font-weight: 500;
-            transition: background-color 0.15s, color 0.15s, transform 0.05s; 
-        }
+        .nav-item { display: flex; align-items: center; height: 42px; padding: 0 8px; border-radius: 4px; cursor: pointer; color: var(--text-secondary); margin: 0 6px 2px 6px; font-size: 16px; font-weight: 500; transition: background-color 0.15s, color 0.15s, transform 0.05s; }
         .nav-item:hover { color: var(--text-primary); background-color: var(--violet-active-bg); }
         .nav-item:active { transform: scale(0.98); }
         .nav-item.active-tab { color: var(--text-primary); background-color: var(--violet-active-bg); font-weight: 600; }
@@ -109,91 +73,39 @@
         .friends-content { padding: 24px; }
         .friends-content h2 { font-size: 20px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid #40444B; padding-bottom: 15px; margin-bottom: 15px; }
 
-        /* --- НОВЫЕ СТИЛИ ДЛЯ СПИСКА ДРУЗЕЙ --- */
+        /* --- Стили для списка друзей и действий --- */
         .friends-list-item {
             display: flex; align-items: center; justify-content: space-between;
             padding: 10px; margin-bottom: 5px; border-radius: 4px;
             border-top: 1px solid #40444B;
             transition: background-color 0.15s;
         }
-        .friends-list-item:hover {
-            background-color: var(--violet-active-bg);
-        }
-        .friend-info {
-            display: flex; align-items: center;
-        }
-        .friend-avatar {
-            width: 32px; height: 32px; border-radius: 50%; background-color: var(--violet-brand);
-            margin-right: 10px; position: relative;
-        }
-        .friend-status {
-            width: 10px; height: 10px; border-radius: 50%; border: 3px solid var(--bg-med);
-            position: absolute; bottom: -2px; right: -2px;
-        }
+        .friends-list-item:hover { background-color: var(--violet-active-bg); }
+        .friend-info { display: flex; align-items: center; }
+        .friend-avatar { width: 32px; height: 32px; border-radius: 50%; background-color: var(--violet-brand); margin-right: 10px; position: relative; }
+        .friend-status { width: 10px; height: 10px; border-radius: 50%; border: 3px solid var(--bg-med); position: absolute; bottom: -2px; right: -2px; }
         .status-online { background-color: var(--status-online); }
         .status-offline { background-color: var(--user-status-offline); }
 
-        .friend-name-tag strong {
-            display: block; font-size: 16px; font-weight: 600;
-        }
-        .friend-name-tag small {
-            color: var(--text-secondary); font-size: 12px;
-        }
-        .friend-actions i {
-            color: var(--text-secondary); cursor: pointer; margin-left: 10px;
-            transition: color 0.15s;
-        }
-        .friend-actions i:hover {
-            color: var(--text-primary);
+        .friend-name-tag strong { display: block; font-size: 16px; font-weight: 600; }
+        .friend-name-tag small { color: var(--text-secondary); font-size: 12px; }
+        .friend-actions i { color: var(--text-secondary); cursor: pointer; margin-left: 10px; transition: color 0.15s; }
+        .friend-actions i:hover { color: var(--text-primary); }
+
+        /* Специальный стиль для кнопки удаления */
+        .friend-actions .fa-user-times:hover {
+            color: var(--red-delete);
         }
 
         /* --- СТИЛИ ДЛЯ ФОРМЫ ДОБАВЛЕНИЯ --- */
-        .add-friend-form-container {
-            margin-bottom: 25px;
-            padding: 10px;
-            background-color: var(--bg-light);
-            border-radius: 8px;
-        }
-        .add-friend-form-container h3 {
-            font-size: 14px;
-            color: var(--text-primary);
-            margin-bottom: 10px;
-        }
-        .add-friend-form-container p {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-        .add-friend-input-group {
-            display: flex;
-        }
-        .add-friend-input-group input {
-            flex-grow: 1;
-            background-color: var(--bg-dark);
-            border: 1px solid #40444B;
-            border-right: none;
-            border-radius: 4px 0 0 4px;
-            padding: 8px;
-            color: var(--text-primary);
-        }
-        .add-friend-input-group button {
-            background-color: var(--violet-brand);
-            color: white;
-            border: none;
-            padding: 0 15px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 0 4px 4px 0;
-            transition: background-color 0.2s;
-        }
-        .add-friend-input-group button:hover {
-            background-color: #4048c1;
-        }
-        .add-friend-message {
-            margin-top: 10px;
-            font-size: 12px;
-            display: none;
-        }
+        .add-friend-form-container { margin-bottom: 25px; padding: 10px; background-color: var(--bg-light); border-radius: 8px; }
+        .add-friend-form-container h3 { font-size: 14px; color: var(--text-primary); margin-bottom: 10px; }
+        .add-friend-form-container p { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; }
+        .add-friend-input-group { display: flex; }
+        .add-friend-input-group input { flex-grow: 1; background-color: var(--bg-dark); border: 1px solid #40444B; border-right: none; border-radius: 4px 0 0 4px; padding: 8px; color: var(--text-primary); }
+        .add-friend-input-group button { background-color: var(--violet-brand); color: white; border: none; padding: 0 15px; font-weight: 600; cursor: pointer; border-radius: 0 4px 4px 0; transition: background-color 0.2s; }
+        .add-friend-input-group button:hover { background-color: #4048c1; }
+        .add-friend-message { margin-top: 10px; font-size: 12px; display: none; }
         .message-error { color: var(--unread-badge); }
         .message-success { color: var(--status-online); }
     </style>
@@ -324,7 +236,7 @@
         const logoutButton = document.getElementById('logoutButton');
 
         const USER_TOKEN_KEY = 'discordCloneUserToken';
-        let currentActiveUser = null; // Глобальный объект для текущего пользователя
+        let currentActiveUser = null; // Глобальный объект для текущего пользователя (будет обновляться)
 
         // --- ДАННЫЕ (ИМИТАЦИЯ) ---
         const contentData = {
@@ -360,7 +272,7 @@
 
         function saveUser(user) {
             let storedUsers = getAllUsers();
-            storedUsers = storedUsers.filter(u => u.id !== user.id); // Удалить старую запись по ID
+            storedUsers = storedUsers.filter(u => u.id !== user.id); 
             storedUsers.push(user);
             localStorage.setItem('users', JSON.stringify(storedUsers));
         }
@@ -368,9 +280,9 @@
         // --- ФУНКЦИИ СЕССИИ И АУТЕНТИФИКАЦИИ ---
 
         function initializeApp(user) {
-            currentActiveUser = user;
+            // !!! Ключевое изменение: обновляем глобальный объект здесь
+            currentActiveUser = user; 
             
-            // Если у пользователя нет массива друзей, создаем его
             if (!user.friends) {
                 user.friends = [];
                 saveUser(user);
@@ -384,17 +296,12 @@
         }
 
         function loginUser(user) {
-            // Создать/обновить токен
             const token = generateToken();
             user.token = token;
             
-            // Сохранить токен и обновить пользователя в БД (Local Storage)
             saveUser(user);
-            
-            // Сохранить токен в ключе сессии (долгая сессия)
             localStorage.setItem(USER_TOKEN_KEY, token);
 
-            // Загрузить UI
             initializeApp(user);
         }
 
@@ -405,13 +312,24 @@
             showScreen('login');
         }
 
-        // --- ЛОГИКА ДОБАВЛЕНИЯ ДРУЗЕЙ ---
+        // --- ЛОГИКА ДОБАВЛЕНИЯ/УДАЛЕНИЯ ДРУЗЕЙ ---
 
         function addFriendLogic(friendUsername) {
+            const token = localStorage.getItem(USER_TOKEN_KEY);
+            // Получаем самую свежую версию текущего пользователя из хранилища!
+            let activeUser = findUserByToken(token); 
+
             const msgEl = document.getElementById('addFriendMessage');
             msgEl.style.display = 'none';
 
-            // 1. Проверка на пустое поле
+            if (!activeUser) {
+                // Если нет активного пользователя (что не должно происходить в этом состоянии)
+                msgEl.textContent = 'Ошибка сессии. Попробуйте войти снова.';
+                msgEl.className = 'add-friend-message message-error';
+                msgEl.style.display = 'block';
+                return;
+            }
+
             if (!friendUsername.trim()) {
                 msgEl.textContent = 'Введите имя пользователя.';
                 msgEl.className = 'add-friend-message message-error';
@@ -419,7 +337,6 @@
                 return;
             }
 
-            // 2. Поиск друга
             const friend = findUserByUsername(friendUsername);
 
             if (!friend) {
@@ -429,30 +346,28 @@
                 return;
             }
 
-            // 3. Проверка на самого себя
-            if (friend.id === currentActiveUser.id) {
+            if (friend.id === activeUser.id) {
                 msgEl.textContent = 'Вы не можете добавить самого себя.';
                 msgEl.className = 'add-friend-message message-error';
                 msgEl.style.display = 'block';
                 return;
             }
 
-            // 4. Проверка на уже существующего друга
-            if (currentActiveUser.friends.includes(friend.id)) {
+            if (activeUser.friends.includes(friend.id)) {
                 msgEl.textContent = `${friend.username} уже ваш друг!`;
                 msgEl.className = 'add-friend-message message-error';
                 msgEl.style.display = 'block';
                 return;
             }
 
-            // 5. Добавление (для простоты добавляем сразу, без запросов)
-            currentActiveUser.friends.push(friend.id);
-            saveUser(currentActiveUser);
+            // Добавление (для простоты добавляем сразу, без запросов)
+            activeUser.friends.push(friend.id);
+            saveUser(activeUser);
             
             // Обновляем список друга (двустороннее добавление)
             if (!friend.friends) friend.friends = [];
-            if (!friend.friends.includes(currentActiveUser.id)) {
-                friend.friends.push(currentActiveUser.id);
+            if (!friend.friends.includes(activeUser.id)) {
+                friend.friends.push(activeUser.id);
                 saveUser(friend);
             }
             
@@ -460,13 +375,37 @@
             msgEl.className = 'add-friend-message message-success';
             msgEl.style.display = 'block';
             
-            // Обновление списка друзей на экране
-            loadContent('friends-home');
+            // !!! Обновляем глобальный объект и UI с новыми данными
+            initializeApp(activeUser); 
+        }
+
+        function removeFriendLogic(friendId) {
+            if (!confirm("Вы уверены, что хотите удалить этого друга?")) return;
+
+            const token = localStorage.getItem(USER_TOKEN_KEY);
+            let activeUser = findUserByToken(token);
+            let friendToRemove = getAllUsers().find(u => u.id === friendId);
+
+            if (!activeUser || !friendToRemove) return;
+
+            // 1. Удаление из списка текущего пользователя
+            activeUser.friends = activeUser.friends.filter(id => id !== friendId);
+            saveUser(activeUser);
+
+            // 2. Удаление из списка друга
+            if (friendToRemove.friends) {
+                friendToRemove.friends = friendToRemove.friends.filter(id => id !== activeUser.id);
+                saveUser(friendToRemove);
+            }
+
+            // !!! Обновляем глобальный объект и UI с новыми данными
+            initializeApp(activeUser);
         }
         
         // --- ФОРМИРОВАНИЕ HTML КОНТЕНТА ---
 
         function getFriendsHomeContent() {
+            // Используем самую свежую версию
             const friends = currentActiveUser.friends.map(friendId => 
                 getAllUsers().find(u => u.id === friendId)
             ).filter(f => f !== undefined);
@@ -477,7 +416,7 @@
                 friendsListHTML = `<p style="color: var(--text-secondary); font-size: 14px; margin-top: 15px; padding: 0 10px;">Начните добавлять друзей по имени пользователя.</p>`;
             } else {
                 friendsListHTML = friends.map(friend => `
-                    <div class="friends-list-item">
+                    <div class="friends-list-item" data-friend-id="${friend.id}">
                         <div class="friend-info">
                             <div class="friend-avatar">
                                 <span class="friend-status status-online"></span>
@@ -489,7 +428,7 @@
                         </div>
                         <div class="friend-actions">
                             <i class="fas fa-comment" title="Начать чат"></i>
-                            <i class="fas fa-ellipsis-v" title="Больше"></i>
+                            <i class="fas fa-user-times remove-friend-btn" title="Удалить друга" data-friend-id="${friend.id}"></i>
                         </div>
                     </div>
                 `).join('');
@@ -515,6 +454,7 @@
             `;
         }
 
+        // (Остальные функции контента - без изменений)
         function getNitroContent() { return `<div class="friends-content"><h2>DISCORD NITRO</h2><p style="color: var(--text-secondary); font-size: 14px;">Покупайте Nitro и поддержите нас!</p></div>`; }
         function getStoreContent() { return `<div class="friends-content"><h2>МАГАЗИН</h2><p style="color: var(--text-secondary); font-size: 14px;">Эксклюзивные товары.</p></div>`; }
         function getTasksContent() { return `<div class="friends-content"><h2>ЗАДАНИЯ</h2><p style="color: var(--text-secondary); font-size: 14px;">Нет активных заданий.</p></div>`; }
@@ -539,13 +479,12 @@
                 `;
         }
 
-        // --- ЛОГИКА ЗАГРУЗКИ КОНТЕНТА ---
+        // --- ЛОГИКА ЗАГРУЗКИ КОНТЕНТА И ОБРАБОТЧИКИ ---
         function loadContent(key) {
             const data = contentData[key];
             
             chatHeaderContent.innerHTML = `<i class="${data.icon}" style="margin-right: 8px; color: ${key === 'friends-home' ? 'var(--text-primary)' : 'var(--text-secondary)'};"></i>${data.title}`;
             
-            // Если контент - это функция (для динамической генерации), вызываем ее
             if (typeof data.content === 'function') {
                 messageList.innerHTML = data.content();
             } else {
@@ -554,22 +493,33 @@
             
             chatForm.style.display = data.hasInput ? 'flex' : 'none';
             
-            // Добавляем обработчик формы добавления друга, если мы на вкладке "Друзья"
             if (key === 'friends-home') {
                 const addFriendForm = document.getElementById('addFriendForm');
+                const friendsListContainer = document.getElementById('friendsListContainer');
+
                 if (addFriendForm) {
                     addFriendForm.addEventListener('submit', function(e) {
                         e.preventDefault();
                         const usernameInput = document.getElementById('friendUsernameInput');
                         addFriendLogic(usernameInput.value);
-                        usernameInput.value = ''; // Очистка поля
+                        usernameInput.value = '';
+                    });
+                }
+                
+                // Обработчик кликов для удаления друга (для динамически загруженных элементов)
+                if (friendsListContainer) {
+                    friendsListContainer.addEventListener('click', function(e) {
+                        const removeBtn = e.target.closest('.remove-friend-btn');
+                        if (removeBtn) {
+                            const friendId = removeBtn.getAttribute('data-friend-id');
+                            removeFriendLogic(friendId);
+                        }
                     });
                 }
             }
         }
         
-        // --- ОБРАБОТЧИКИ (без изменений, кроме переключения контента) ---
-
+        // (Остальные обработчики - без изменений)
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
             loginErrorMsg.style.display = 'none';
@@ -606,7 +556,7 @@
                 password: encryptPassword(password), 
                 token: null,
                 id: Date.now().toString(),
-                friends: [] // Инициализация пустого списка друзей
+                friends: [] 
             };
             saveUser(newUser);
             registerSuccessMsg.style.display = 'block';
@@ -633,29 +583,7 @@
                 mainApp.style.display = 'flex';
             }
         }
-        
-        channelList.addEventListener('click', (e) => {
-            const item = e.target.closest('.nav-item');
-            if (!item) return;
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-tab'));
-            item.classList.add('active-tab');
-            const targetKey = item.getAttribute('data-target');
-            if (targetKey) { loadContent(targetKey); }
-        });
 
-        document.querySelector('.servers-panel').addEventListener('click', (e) => {
-            const icon = e.target.closest('.server-icon');
-            if (!icon) return;
-            document.querySelectorAll('.server-icon').forEach(i => i.classList.remove('active'));
-            icon.classList.add('active');
-            if (icon.id === 'friendsServerIcon') {
-                document.getElementById('channelHeader').innerHTML = '<input type="text" placeholder="Найти или начать беседу">';
-                channelList.innerHTML = getFriendsNav();
-                loadContent('friends-home');
-            } 
-        });
-
-        // --- ИНИЦИАЛИЗАЦИЯ ---
         function checkSessionToken() {
             const token = localStorage.getItem(USER_TOKEN_KEY);
             if (token) {
