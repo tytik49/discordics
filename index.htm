@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фиолетовый Дискорд (Один Файл)</title>
+
+    <style>
+        /* Переменные для наших фиолетовых оттенков */
+        :root {
+            --bg-dark: #202225; /* Основной фон (почти черный) */
+            --bg-med: #2F3136; /* Фон каналов/пользователей */
+            --bg-light: #36393F; /* Фон чата */
+            --violet-brand: #7289DA; /* Фирменный фиолетовый */
+            --violet-active: #5865F2; /* Более яркий для активных элементов */
+            --text-primary: #DCDDDE; /* Светлый текст */
+            --text-secondary: #99AAB5; /* Серый текст/заголовки */
+            --status-online: #43B581; /* Зеленый (онлайн) */
+            --status-offline: #747F8D; /* Серый (офлайн) */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            /* Шрифты Discord или близкие к ним */
+            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+            overflow: hidden; 
+            background: var(--bg-dark);
+        }
+
+        /* 1. Общий контейнер приложения - Используем Flexbox */
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 2. Панель Серверов */
+        .servers-panel {
+            width: 72px;
+            background-color: var(--bg-dark);
+            padding: 10px 0;
+            flex-shrink: 0; 
+            overflow-y: auto;
+        }
+
+        .server-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--bg-med);
+            border-radius: 50%;
+            margin: 8px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: border-radius 0.2s, background-color 0.2s;
+        }
+
+        .server-icon:hover {
+            background-color: var(--violet-brand);
+        }
+
+        .server-icon.active {
+            border-radius: 30%;
+            background-color: var(--violet-brand);
+        }
+
+        .server-icon.add-server {
+            background-color: var(--bg-med);
+            color: var(--status-online);
+            font-size: 2em;
+        }
+
+        /* 3. Панель Каналов */
+        .channels-panel {
+            width: 240px;
+            background-color: var(--bg-med);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .channel-header {
+            height: 48px;
+            padding: 0 16px;
+            line-height: 48px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .channel-list {
+            flex-grow: 1;
+            padding: 10px 8px;
+            overflow-y: auto;
+        }
+
+        .channel-category {
+            color: var(--text-secondary);
+            font-size: 0.7em;
+            font-weight: 700;
+            margin-top: 10px;
+            padding: 0 8px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            height: 32px;
+            padding: 0 8px;
+            margin-top: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .channel-item:hover {
+            color: var(--text-primary);
+            background-color: rgba(79, 84, 92, 0.32);
+        }
+
+        .channel-item.active {
+            color: var(--text-primary);
+            background-color: var(--violet-brand);
+        }
+
+        /* Блок Пользователя/Настроек */
+        .user-settings {
+            height: 54px;
+            background-color: var(--bg-dark);
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            color: var(--text-primary);
+            font-size: 0.9em;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--violet-brand);
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
+            border: 2px solid var(--bg-dark);
+        }
+
+        .avatar.online::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--status-online);
+            border: 2px solid var(--bg-dark);
+        }
+
+        .username-tag {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .username-tag .tag {
+            font-size: 0.7em;
+            color: var(--text-secondary);
+        }
+
+        .controls {
+            color: var(--text-secondary);
+            cursor: pointer;
+            /* Имитация иконок */
+            letter-spacing: 5px; 
+            font-size: 1.2em;
+        }
+
+        /* 4. Панель Чата (Контент) */
+        .chat-panel {
+            flex-grow: 1;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            height: 48px;
+            padding: 0 16px;
+            line-height: 48px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
+            font-size: 1.1em;
+        }
+
+        .message-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .msg-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--violet-brand);
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .msg-author {
+            color: var(--text-primary);
+            font-size: 0.9em;
+            margin-bottom: 2px;
+        }
+
+        .msg-time {
+            color: var(--text-secondary);
+            font-size: 0.75em;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
+        .msg-content {
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .message-input-area {
+            padding: 20px 16px;
+            flex-shrink: 0;
+        }
+
+        .message-input-area input {
+            width: 100%;
+            height: 44px;
+            border-radius: 8px;
+            padding: 0 16px;
+            background-color: var(--bg-med);
+            color: var(--text-primary);
+            border: none;
+            font-size: 1em;
+        }
+
+        /* 5. Панель Пользователей */
+        .members-panel {
+            width: 280px;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            padding: 8px;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .member-category {
+            color: var(--text-secondary);
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 8px 0;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            margin-bottom: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .member-item:hover {
+            background-color: var(--bg-med);
+        }
+
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--violet-brand);
+            margin-right: 8px;
+            position: relative;
+            border: 2px solid var(--bg-light);
+        }
+
+        .member-avatar.online::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--status-online);
+            border: 2px solid var(--bg-light);
+        }
+
+        .member-avatar.offline {
+            background-color: var(--status-offline);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="servers-panel">
+            <div class="server-icon active">💜</div>
+            <div class="server-icon">Друзья</div>
+            <div class="server-icon">Проект А</div>
+            <div class="server-icon">🎮</div>
+            <div class="server-icon add-server">+</div>
+        </div>
+
+        <div class="channels-panel">
+            <div class="channel-header">Фиолетовое Сообщество</div>
+            <div class="channel-list">
+                <div class="channel-category">ТЕКСТОВЫЕ КАНАЛЫ</div>
+                <div class="channel-item active"># общие</div>
+                <div class="channel-item"># мемы</div>
+                <div class="channel-category">ГОЛОСОВЫЕ КАНАЛЫ</div>
+                <div class="channel-item voice">🎤 Общий Голос</div>
+            </div>
+
+            <div class="user-settings">
+                <div class="user-info">
+                    <span class="avatar online"></span>
+                    <div class="username-tag">
+                        **VioletUser**
+                        <span class="tag">#0001</span>
+                    </div>
+                </div>
+                <div class="controls">⚙️ 📞 🔇</div>
+            </div>
+        </div>
+
+        <div class="chat-panel">
+            <div class="chat-header"># общие</div>
+            <div class="message-list">
+                <div class="message">
+                    <span class="msg-avatar"></span>
+                    <div class="msg-content">
+                        <div class="msg-author">**Admin** <span class="msg-time">Сегодня в 17:00</span></div>
+                        Привет всем! Наш фиолетовый сервер готов! Давайте звонить!
+                    </div>
+                </div>
+                <div class="message">
+                    <span class="msg-avatar"></span>
+                    <div class="msg-content">
+                        <div class="msg-author">**PurpleBot** <span class="msg-time">Сегодня в 17:05</span></div>
+                        *Добро пожаловать. Я поддерживаю все фиолетовые функции.*
+                    </div>
+                </div>
+            </div>
+            <div class="message-input-area">
+                <input type="text" placeholder="Написать в # общие">
+            </div>
+        </div>
+
+        <div class="members-panel">
+            <div class="member-category">ОНЛАЙН (3)</div>
+            <div class="member-item">
+                <span class="member-avatar online"></span>
+                VioletUser
+            </div>
+            <div class="member-item">
+                <span class="member-avatar"></span>
+                PurpleBot
+            </div>
+            <div class="member-category">ОФЛАЙН (5)</div>
+            <div class="member-item">
+                <span class="member-avatar offline"></span>
+                NoLifer
+            </div>
+        </div>
+    </div>
+</body>
+</html>
